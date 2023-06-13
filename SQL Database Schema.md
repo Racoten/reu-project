@@ -83,13 +83,10 @@ CREATE TABLE `QuestionRecommendations` (
     FOREIGN KEY(`RecommendationID`) REFERENCES `Recommendations`(`RecommendationID`)
 );
 
-
--- Add the attack type
 INSERT INTO `AttackTypes` (`AttackTypeName`) VALUES 
 ('Email Security'),
 ('Browser Security');
 
--- Add the questions
 INSERT INTO `EmailQuestions` (`AttackTypeID`, `QuestionText`) VALUES 
 (1, 'Are there any malicious links?'),
 (1, 'Is the sender address legitimate?'),
@@ -100,7 +97,6 @@ INSERT INTO `BrowserSecurityQuestions` (`AttackTypeID`, `QuestionText`) VALUES
 (2, 'Is the user on secure websites (https)?'),
 (2, 'Do you notice a typo on the domain part of the URL?');
 
--- Add the recommendations
 INSERT INTO `Recommendations` (`AttackTypeID`, `RecommendationText`) VALUES 
 (1, 'Avoid clicking on the links from untrusted emails.'),
 (1, 'Double check the sender email address for any irregularities.'),
