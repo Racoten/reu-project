@@ -1,8 +1,6 @@
 ```sql
 CREATE DATABASE `cybersafe`;
 
-use `cybersafe`;
-
 CREATE TABLE `Users` (
     `UserID` INT AUTO_INCREMENT,
     `UserName` VARCHAR(255) NOT NULL,
@@ -30,38 +28,30 @@ CREATE TABLE `Questionnaires` (
 
 CREATE TABLE `EmailQuestions` (
     `QuestionID` INT AUTO_INCREMENT,
-    `AttackTypeID` INT,
     `QuestionText` TEXT NOT NULL,
-    PRIMARY KEY(`QuestionID`),
-    FOREIGN KEY(`AttackTypeID`) REFERENCES `AttackTypes`(`AttackTypeID`)
+    PRIMARY KEY(`QuestionID`)
 );
 
 CREATE TABLE `BrowserSecurityQuestions` (
     `QuestionID` INT AUTO_INCREMENT,
-    `AttackTypeID` INT,
     `QuestionText` TEXT NOT NULL,
-    PRIMARY KEY(`QuestionID`),
-    FOREIGN KEY(`AttackTypeID`) REFERENCES `AttackTypes`(`AttackTypeID`)
+    PRIMARY KEY(`QuestionID`)
 );
 
 CREATE TABLE `QuestionnaireQuestions` (
     `QuestionnaireID` INT,
     `QuestionID` INT,
-    `AttackTypeID` INT,
-    PRIMARY KEY(`QuestionnaireID`, `QuestionID`, `AttackTypeID`),
-    FOREIGN KEY(`QuestionnaireID`) REFERENCES `Questionnaires`(`QuestionnaireID`),
-    FOREIGN KEY(`AttackTypeID`) REFERENCES `AttackTypes`(`AttackTypeID`)
+    PRIMARY KEY(`QuestionnaireID`, `QuestionID`),
+    FOREIGN KEY(`QuestionnaireID`) REFERENCES `Questionnaires`(`QuestionnaireID`)
 );
 
 CREATE TABLE `UserAnswers` (
     `QuestionnaireID` INT,
     `QuestionID` INT,
-    `AttackTypeID` INT,
     `UserID` INT,
     `Answer` VARCHAR(255),
-    PRIMARY KEY(`QuestionnaireID`, `QuestionID`, `AttackTypeID`, `UserID`),
+    PRIMARY KEY(`QuestionnaireID`, `QuestionID`, `UserID`),
     FOREIGN KEY(`QuestionnaireID`) REFERENCES `Questionnaires`(`QuestionnaireID`),
-    FOREIGN KEY(`AttackTypeID`) REFERENCES `AttackTypes`(`AttackTypeID`),
     FOREIGN KEY(`UserID`) REFERENCES `Users`(`UserID`)
 );
 
@@ -72,47 +62,4 @@ CREATE TABLE `Recommendations` (
     PRIMARY KEY(`RecommendationID`),
     FOREIGN KEY(`AttackTypeID`) REFERENCES `AttackTypes`(`AttackTypeID`)
 );
-
-CREATE TABLE `QuestionRecommendations` (
-    `QuestionID` INT,
-    `AttackTypeID` INT,
-    `RecommendationID` INT,
-    PRIMARY KEY(`QuestionID`, `AttackTypeID`, `RecommendationID`),
-    FOREIGN KEY(`QuestionID`) REFERENCES `EmailQuestions`(`QuestionID`),
-    FOREIGN KEY(`AttackTypeID`) REFERENCES `AttackTypes`(`AttackTypeID`),
-    FOREIGN KEY(`RecommendationID`) REFERENCES `Recommendations`(`RecommendationID`)
-);
-
-INSERT INTO `AttackTypes` (`AttackTypeName`) VALUES 
-('Email Security'),
-('Browser Security');
-
-INSERT INTO `EmailQuestions` (`AttackTypeID`, `QuestionText`) VALUES 
-(1, 'Are there any malicious links?'),
-(1, 'Is the sender address legitimate?'),
-(1, 'Is the email asking you to do anything that would lead to account compromise?');
-
-INSERT INTO `BrowserSecurityQuestions` (`AttackTypeID`, `QuestionText`) VALUES 
-(2, 'Is the user currently on an open wifi network?'),
-(2, 'Is the user on secure websites (https)?'),
-(2, 'Do you notice a typo on the domain part of the URL?');
-
-INSERT INTO `Recommendations` (`AttackTypeID`, `RecommendationText`) VALUES 
-(1, 'Avoid clicking on the links from untrusted emails.'),
-(1, 'Double check the sender email address for any irregularities.'),
-(1, 'Do not provide any personal information or password in response to an email.');
-
-INSERT INTO `Recommendations` (`AttackTypeID`, `RecommendationText`) VALUES 
-(2, 'Avoid using open wifi networks for sensitive activities.'),
-(2, 'Always ensure you are on a secure website when submitting sensitive information.'),
-(2, 'Check the URL for typos to avoid phishing attacks.');
-
--- Link the questions to the recommendations
-INSERT INTO `QuestionRecommendations` (`QuestionID`, `AttackTypeID`, `RecommendationID`) VALUES 
-(1, 1, 1),
-(2, 1, 2),
-(3, 1, 3),
-(1, 2, 4),
-(2, 2, 5),
-(3, 2, 6);
 ```
