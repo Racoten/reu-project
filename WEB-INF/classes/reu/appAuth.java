@@ -149,33 +149,9 @@ public class appAuth extends HttpServlet {
 		// Return the actual message
 		return null;
 	}
+	
+	
 
-	public String doRegister(String username, String email, String password) {
-		String msg = "";
-		String table, values;
-
-		String hashingVal = hashingSha256(username + password);
-
-		table = "users";
-		values = "'" + username + "', '" + email + "', '" + hashingVal + "'";
-
-		String query = "INSERT INTO " + table + " (UserName, Email, PasswordHash) VALUES (" + values + ");";
-
-		try {
-			boolean result = myDBConn.doInsert(query);
-
-			if (result == true) {
-				msg = "no";
-			} else {
-				System.out.println("New user added: " + username);
-				msg = "yes";
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return msg;
-	}
 
     public void destroy() {
     	// do nothing.
