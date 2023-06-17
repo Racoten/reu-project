@@ -9,11 +9,11 @@ import java.sql.* ;
 public class MySQLConnector{
 
 	//Database credential <jdbc:<protocol>://<hostName>/<databaseName>>
-	private String DB_URL="jdbc:mysql://localhost/cpen410";
+	private String DB_URL="jdbc:mysql://localhost/cybersafe";
 	
 	//Database authorized user information
-	private String USER="student";
-	private String PASS="password";
+	private String USER="root";
+	private String PASS="lol.exe1";
    
    //Connection objects
    private Connection conn;
@@ -30,7 +30,8 @@ public class MySQLConnector{
 	{
 		//define connections ojects null
 		conn = null;
-		stmt = null;}
+		stmt = null;
+	}
 		
 	/********
 		doConnection method
@@ -41,8 +42,8 @@ public class MySQLConnector{
 	public void doConnection(){
 		try{
 		  //Register JDBC the driver
-		//Class.forName("com.mysql.jdbc.Driver").newInstance();
-		Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+		  Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+
 								   
 		  System.out.println("Connecting to database...");
 		   //Open a connection using the database credentials
@@ -50,7 +51,7 @@ public class MySQLConnector{
 		  
 		  System.out.println("Creating statement...");
 		  //Create an Statement object for performing queries and transations
-		  stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		  stmt = conn.createStatement();
 		  System.out.println("Statement Ok...");
 		} catch(SQLException sqlex){
 			sqlex.printStackTrace();
@@ -79,6 +80,39 @@ public class MySQLConnector{
 			e.printStackTrace();
 		}
 	}
+	
+	public boolean doAuthentication(String username, String hashbrown){
+		// SQL query to get the user with the given username and password hash
+		String query = "SELECT * FROM Users WHERE UserName = '" + username + "' AND PasswordHash = '" + hashbrown + "'";
+		Statement stmt = null;
+		ResultSet rs = null;
+		System.out.println("Running query: " + query);
+	
+		try {
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(query);
+				
+			// If a user is found, return true, else return false
+			if (rs.next()) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (stmt != null) stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	
+		return false;
+	}
+	
+	
 	/***********
 		doSelect method
 			This method performs a query to the database
@@ -89,12 +123,13 @@ public class MySQLConnector{
 			@returns:
 				ResulSet result containing the project tuples resulting from the query
 	*/
+	
 	public ResultSet doSelect(String fields, String tables, String where){
 		//Create a ResulSet
 		ResultSet result=null;
 		
 		//Create the selection statement 
-		String selectionStatement = "Select " + fields+ " from " + tables + " where " + where + " ;";
+		String selectionStatement = "Select " + fields+ " from " + tables + " WHERE " + where + " ;";
 		System.out.println(selectionStatement);
 		
 		try{
@@ -108,6 +143,27 @@ public class MySQLConnector{
 			return result;
 		}
 	}
+
+	public boolean doFlowSelect(String query){
+		//Create a ResulSet
+		boolean result=false;
+		
+		//Create the selection statement 
+		String selectionStatement = query;
+		System.out.println(selectionStatement);
+		
+		try{
+			//perform the query and catch results in the result object
+			result = stmt.execute(selectionStatement);
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		finally{
+			//return results
+			return result;
+		}
+	}
+
 	/***********
 		doSelect method
 			This method performs a query to the database
@@ -138,6 +194,24 @@ public class MySQLConnector{
 		}
 	}
 	
+	public ResultSet doSelect(String query){
+		//Create a ResulSet
+		ResultSet result=null;
+		
+		//Create the selection statement 
+		String selectionStatement = query;
+		
+		try{
+			//perform the query and catch results in the result object
+			result = stmt.executeQuery(selectionStatement);
+		} catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			//return results
+			return result;
+		}
+	}
+
 	/***********
 		doSelect method
 			This method performs a query to the database
@@ -168,8 +242,108 @@ public class MySQLConnector{
 			return result;
 		}
 	}
-	
-	
+
+	public boolean doInsert(String query)
+	{
+		boolean res=false;
+		System.out.println(query);
+		//try to insert a record to the selected table
+		try{
+			res = stmt.execute(query);
+			System.out.println("MySQLConnector insertion: " + res);
+			
+		}
+		catch(Exception e)
+		{
+			
+			e.printStackTrace();
+		}
+		finally{
+			
+		}
+			return res;
+	}
+
+	public boolean doDelete(String table, String where)
+	{
+		boolean res=false;
+		String queryString ="DELETE FROM "+ table + " where " + where + ";";
+		System.out.println(queryString);
+		//try to insert a record to the selected table
+		try{
+			 res=stmt.execute(queryString);
+			 System.out.println("MySQLConnector insertion: " + res);
+			 
+		}
+		catch(Exception e)
+		{
+			
+			e.printStackTrace();
+		}
+		finally{
+			
+		}
+			return res;
+	}
+
+	public boolean doRoleInsert(String query)
+	{
+		boolean res=false;
+		String charString = query;
+		System.out.println(charString);
+		//try to insert a record to the selected table
+		try{
+			 res=stmt.execute(charString);
+			 System.out.println("MySQLConnector insertion: " + res);
+			 
+		}
+		catch(Exception e)
+		{
+			
+			e.printStackTrace();
+		}
+		finally{
+			
+		}
+			return res;
+	}
+
+	public ResultSet doGetProfilePicture(String query) {
+		//Create a ResulSet
+		ResultSet result=null;
+		
+		try{
+			//perform the query and catch results in the result object
+			result = stmt.executeQuery(query);
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		finally{
+			//return results
+			return result;
+		}
+	}
+
+	public ResultSet doSelect(){
+		
+		//Create a ResulSet
+		ResultSet result=null;
+		
+		//Create the selection statement 
+		String selectionStatement = null;
+		
+		try{
+			//perform the query and catch results in the result object
+			result = stmt.executeQuery(selectionStatement);
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		finally{
+			//return results
+			return result;
+		}
+	}
+
 	/***********
 		Debugging method
 			This method creates an applicationDBManager object, retrieves all departments in the database, and close the connection to the database
@@ -189,7 +363,7 @@ public class MySQLConnector{
 		//Define the selected tables
 		tables="department";
 		//Establish the where clause
-		whereClause="budget > 1000";		
+		whereClause="budget>1000";		
 		
 			
 		try{
@@ -204,7 +378,6 @@ public class MySQLConnector{
 			while (res.next())
 			{
 				count++;
-				System.out.println(res.getString(1));
 				
 			}
 			//Print the results count
