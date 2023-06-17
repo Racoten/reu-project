@@ -74,10 +74,10 @@ public class appAuth extends HttpServlet {
 
 		System.out.println("Receive request with parameter: " + param);
 
-		if (param.equals("login")) {
-			System.out.println("Param is login");
-			String username = request.getParameter("username");
-			String password = request.getParameter("password");
+		if (param.equals("auth")) {
+			System.out.println("Param is auth");
+			String username = request.getParameter("user");
+			String password = request.getParameter("pass");
 
 			String hashingVal = hashingSha256(username + password);
 			
