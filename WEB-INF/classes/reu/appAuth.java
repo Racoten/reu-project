@@ -23,11 +23,11 @@ import java.util.*;
 // Extend HttpServlet class
 public class appAuth extends HttpServlet {
 
-	public MySQLCompleteConnector myDBConn;
+	public MySQLConnector myDBConn;
 
 	public appAuth(){
 		//Create the MySQLConnector object
-		myDBConn = new MySQLCompleteConnector();
+		myDBConn = new MySQLConnector();
 		
 		//Open the connection to the database
 		myDBConn.doConnection();
@@ -105,8 +105,20 @@ public class appAuth extends HttpServlet {
 				out.println("not");	  
 			}
 		}
-		else if (param.equals("search")) {
-			System.out.println("Param is search");
+		else if (param.equals("register")) {
+			System.out.println("Param is register");
+
+			String username = request.getParameter("username");
+			String password = request.getParameter("password");
+			String email = request.getParameter("email");
+			String msg = doRegister(username, email, password);
+
+			// Actual logic goes here.
+			PrintWriter out = response.getWriter();
+
+			//Send the final response to the requester
+			out.println(msg);
+			System.out.println(msg);
 		}
 	}
 
@@ -137,11 +149,35 @@ public class appAuth extends HttpServlet {
 		// Return the actual message
 		return null;
 	}
-	
-	
 
+	public String doRegister(String username, String email, String password) {
+		String msg;
+		String table, values;
 
-   public void destroy() {
-      // do nothing.
-   }
+		String hashingVal = hashingSha256(username + password);
+
+		table = "users";
+		values = "'" + username + "', '" + email + "', '" + hashingVal + "'";
+
+		String query = "INSERT INTO " + table + " (UserName, Email, PasswordHash) VALUES (" + values + ");";
+
+		try {
+			boolean result = myDBConn.doInsertUser(query);
+
+			if (result == true) {
+				System.out.println("New user added: " + username);
+				return "yes";
+			} else {
+				return "no";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+    public void destroy() {
+    	// do nothing.
+    }
 }
