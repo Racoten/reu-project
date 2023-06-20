@@ -27,15 +27,15 @@ CREATE TABLE `Questionnaires` (
 );
 
 CREATE TABLE `EmailQuestions` (
-    `QuestionID` INT,
-    `GeneralQuestionID` INT,
-    FOREIGN KEY(`QuestionID`) REFERENCES `GeneralQuestions`(`QuestionID`)
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
 );
 
 CREATE TABLE `BrowserSecurityQuestions` (
-    `QuestionID` INT,
-    `GeneralQuestionID` INT,
-    FOREIGN KEY(`QuestionID`) REFERENCES `GeneralQuestions`(`QuestionID`)
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
 );
 
 CREATE TABLE `EmailQuestionsTargeted` (
