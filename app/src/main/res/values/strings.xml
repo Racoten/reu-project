@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Cybersafe</string>
+    <string name="heading_text">CyberSafe</string>
+    <string name="login_button">Login</string>
+    <string name="signup_button">Signup</string>
+    <string name="login_heading">Login</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="email_hint">Email</string>
 </resources>
