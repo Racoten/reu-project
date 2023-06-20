@@ -80,46 +80,38 @@ public class MySQLConnector{
 			e.printStackTrace();
 		}
 	}
-	/***********
-		doSelect method
-			This method performs a query to the database
-			@parameters:
-				fields: list of fields to be projected from the tables
-				tables: list of tables to be selected
-				where: where clause
-			@returns:
-				ResulSet result containing the project tuples resulting from the query
-	*/
-	public ResultSet doSelect(String fields, String tables, String where){
-		//Create a ResulSet
-		ResultSet result=null;
-		
-		//Create the selection statement 
-		String selectionStatement = "Select " + fields+ " from " + tables + " where " + where + " ;";
-		System.out.println(selectionStatement);
-		
-		try{
-			//perform the query and catch results in the result object
-			result = stmt.executeQuery(selectionStatement);
-		} catch(Exception e){
+	
+	public boolean doAuthentication(String username, String hash){
+		// SQL query to get the user with the given username and password hash
+		String query = "SELECT * FROM Users WHERE UserName = '" + username + "' AND PasswordHash = '" + hash + "'";
+		Statement stmt = null;
+		ResultSet rs = null;
+		System.out.println("Running query: " + query);
+	
+		try {
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(query);
+				
+			// If a user is found, return true, else return false
+			if (rs.next()) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		finally{
-			//return results
-			return result;
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (stmt != null) stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	
 		return false;
 	}
-	/***********
-		doSelect method
-			This method performs a query to the database
-			@parameters:
-				fields: list of fields to be projected from the tables
-				tables: list of tables to be selected
-			@returns:
-				ResulSet result containing the project tuples resulting from the query
-	*/
+
 	
 	public ResultSet doSelect(String query){
 		//Create a ResulSet
@@ -138,26 +130,13 @@ public class MySQLConnector{
 			return result;
 		}
 	}
-	
-	/***********
-		doSelect method
-			This method performs a query to the database
-			@parameters:
-				fields: list of fields to be projected from the tables
-				tables: list of tables to be selected
-				where: where clause
-				orderBy: order by condition
-			@returns:
-				ResulSet result containing the project tuples resulting from the query
-	*/
-	public ResultSet doSelect(String fields, String tables, String where, String orderBy){
-		
-		//Create a ResulSet
-		ResultSet result=null;
-		
-		//Create the selection statement 
-		String selectionStatement = "Select" + fields+ " from " + tables + " where " + where + " order by " + orderBy + ";";
-		
+
+
+	public boolean doInsert(String query)
+	{
+		boolean res=false;
+		System.out.println(query);
+		//try to insert a record to the selected table
 		try{
 			res = stmt.execute(query);
 			System.out.println("MySQLConnector insertion: " + res);
@@ -183,46 +162,6 @@ public class MySQLConnector{
 	*/
 	public static void main(String[] args)
 	{	
-		System.out.println("TEsting");
-		//Create a MySQLConnector
-		MySQLConnector conn = new MySQLConnector();
-		//Declare tthe fiels, tables and whereClause string objects
-		String fields, tables, whereClause;
-		//Define the projected fields
-		fields ="dept_name, building";
-		//Define the selected tables
-		tables="department";
-		//Establish the where clause
-		whereClause="budget > 1000";		
-		
-			
-		try{
-			System.out.println("Connecting...");
-			//Establish the database connection
-			conn.doConnection();
-			//perform the query using the doSelect methods with 3 parameters
-			ResultSet res=conn.doSelect(fields, tables, whereClause);
-		
-			//Iterate over the ResulSet containing all departments in the database, and count how many tuples were retrieved
-			int count=0;
-			while (res.next())
-			{
-				count++;
-				System.out.println(res.getString(1));
-				
-			}
-			//Print the results count
-			System.out.println("Count: " + count);
-			
-			//Close the ResulSet
-			res.close();
-			//Close the database connection
-			conn.closeConnection();
-			
-		} catch(Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 }
