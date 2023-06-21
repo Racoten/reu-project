@@ -1,5 +1,8 @@
 package com.example.cybersafe;
 
+import static org.apache.http.conn.ssl.SSLSocketFactory.SSL;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -7,28 +10,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -37,7 +37,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        System.out.println("here");
         Button login_btn = findViewById(R.id.login_page_button);
         /*
         login_btn.setOnClickListener(new View.OnClickListener() {
@@ -82,36 +81,85 @@ public class LoginActivity extends AppCompatActivity {
          */
     }
 
-    public void doLogin(View view) {
-
-        //EditText username = (EditText) findViewById(R.id.username_input);
-        //EditText password = (EditText) findViewById(R.id.password_input);
+    private OkHttpClient getUnsafeOkHttpClient() {
         try {
-            /*
-            Map<String, String> params = new HashMap<>();
-            params.put("param", "login");
-            params.put("username", username.getText().toString());
-            params.put("password", password.getText().toString());
+            final TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
 
-             */
-            //String param_string = "param=login&username="+username.getText().toString()+"&password="+password.getText().toString();
-            String param_string = "param=login&username=test&password=test";
-            URL loginurl = new URL("http://localhost:8080/appAuth");
+                        @Override
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain,
+                                                       String authType) throws
+                                CertificateException {
+                        }
 
-            HttpURLConnection conn = (HttpURLConnection) loginurl.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
+                        @Override
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain,
+                                                       String authType) throws
+                                CertificateException {
+                        }
+                        @Override
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new java.security.cert.X509Certificate[]{};
+                        }
+                    }
+            };
 
-            DataOutputStream outstream = new DataOutputStream(conn.getOutputStream());
-            outstream.writeBytes(param_string);
-            outstream.flush();
-            outstream.close();
+            final SSLContext sslContext = SSLContext.getInstance(SSL);
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
 
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
+
+            builder.hostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+
+            return builder.build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    public void doLogin(View view) throws NoSuchAlgorithmException, KeyManagementException {
+
+        EditText username = (EditText) findViewById(R.id.username_input);
+        EditText password = (EditText) findViewById(R.id.password_input);
+
+        OkHttpClient client = getUnsafeOkHttpClient();
+        String url = "https://10.0.2.2:8443/appAuth";
+        //String params = "param=login&username=test&password=test";
+
+        RequestBody body = new FormBody.Builder()
+                .add("param", "login")
+                .add("username", username.getText().toString())
+                .add("password", password.getText().toString())
+                .build();
+
+
+
+
+        Request req = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
+        client.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                System.out.println(response.body().string());
+            }
+        });
+
     }
 }
