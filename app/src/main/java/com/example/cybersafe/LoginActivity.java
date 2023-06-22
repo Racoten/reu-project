@@ -37,48 +37,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Button login_btn = findViewById(R.id.login_page_button);
-        /*
-        login_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //EditText username = (EditText) findViewById(R.id.username_input);
-                //EditText password = (EditText) findViewById(R.id.password_input);
-
-                try {
-                    URL url = new URL("http://localhost:8080/appAuth");
-                    String params = "param=login&username=test&password=test";
-
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("POST");
-
-                    conn.setDoOutput(true);
-
-                    //conn.connect();
-                    OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-                    out.write(params.getBytes());
-                    out.flush();
-                    out.close();
-                    conn.connect();
-
-
-                    BufferedReader b = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    String line;
-                    while((line = b.readLine()) != null) {
-                        System.out.println(line);
-                    }
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-        });
-
-         */
     }
 
     private OkHttpClient getUnsafeOkHttpClient() {
