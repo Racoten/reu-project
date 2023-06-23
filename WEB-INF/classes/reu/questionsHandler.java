@@ -21,9 +21,9 @@ public class questionsHandler {
 		myDBConn.doConnection();
 	}
 
-    public ArrayList<String> getEmailGeneralQuestions() {
-        String queryEmail = "SELECT QuestionText FROM emailquestions;";
-        ResultSet querySend = myDBConn.doSelect(queryEmail);
+    public ArrayList<String> getGeneralQuestions(String type) {
+        String query = "SELECT QuestionText FROM "+type+";";
+        ResultSet querySend = myDBConn.doSelect(query);
         
         if (!questions.isEmpty()) {
             questions.clear();
@@ -38,26 +38,6 @@ public class questionsHandler {
             System.out.println(e);
         }
 
-        return questionsEmail;
-    }
-
-    public ArrayList<String> getBrowserSecurityGeneralQuestions() {
-        String queryBrowser = "SELECT QuestionText FROM browsersecurityquestions;";
-        ResultSet querySend = myDBConn.doSelect(queryBrowser);
-
-        if (!questionsBrowserSecurity.isEmpty()) {
-            questionsBrowserSecurity.clear();
-        }
-
-        try {
-            while (querySend.next()) {
-                questionsBrowserSecurity.add(querySend.getString("QuestionText"));
-                System.out.println("Question being added: " + querySend.getString("QuestionText"));
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-        return questionsBrowserSecurity;
+        return questions;
     }
 }
