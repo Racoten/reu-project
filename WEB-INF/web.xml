@@ -57,4 +57,20 @@
     <url-pattern>/appAuth</url-pattern>
 
    </servlet-mapping>
+
+   <servlet>
+
+    <servlet-name>questionsHandler</servlet-name>
+
+    <servlet-class>reu.questionsHandler</servlet-class>
+
+   </servlet>
+
+   <servlet-mapping>
+
+    <servlet-name>questionsHandler</servlet-name>
+
+    <url-pattern>/questionsHandler</url-pattern>
+
+   </servlet-mapping>
 </web-app>
