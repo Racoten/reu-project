@@ -9,11 +9,16 @@ import java.sql.* ;
 public class MySQLConnector{
 
 	//Database credential <jdbc:<protocol>://<hostName>/<databaseName>>
-	private String DB_URL="jdbc:mysql://localhost/cybersafe";
+
+	//private String DB_URL="jdbc:mysql://localhost/cybersafe";
+
+	// keep this url string as well
+	private String DB_URL = "jdbc:mysql://localhost:3306/cybersafe?serverTimezone=UTC";
 	
 	//Database authorized user information
 	private String USER="root";
-	private String PASS="lol.exe1";
+	//private String PASS="lol.exe1";
+	private String PASS="NewPassword123!";
    
    //Connection objects
    private Connection conn;

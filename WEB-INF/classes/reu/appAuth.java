@@ -150,7 +150,8 @@ public class appAuth extends HttpServlet {
 	public String doAuthentication(String username) {
 		String msg = "";
 		String fields = "*";
-		String tables = "users";
+		//String tables = "users";
+		String tables = "Users";
 		String whereClause = "UserName = '" + username + "';";
 
 		
@@ -183,7 +184,8 @@ public class appAuth extends HttpServlet {
 
 		String hashingVal = hashingSha256(username + password);
 
-		table = "users";
+		//table = "users";
+		table = "Users";
 		values = "'" + username + "', '" + email + "', '" + hashingVal + "'";
 
 		String query = "INSERT INTO " + table + " (UserName, Email, PasswordHash) VALUES (" + values + ");";

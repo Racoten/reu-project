@@ -5,10 +5,12 @@ import static org.apache.http.conn.ssl.SSLSocketFactory.SSL;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -39,56 +41,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
-    private OkHttpClient getUnsafeOkHttpClient() {
-        try {
-            final TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-
-                        @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain,
-                                                       String authType) throws
-                                CertificateException {
-                        }
-
-                        @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain,
-                                                       String authType) throws
-                                CertificateException {
-                        }
-                        @Override
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return new java.security.cert.X509Certificate[]{};
-                        }
-                    }
-            };
-
-            final SSLContext sslContext = SSLContext.getInstance(SSL);
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-
-            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
-
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
-
-            return builder.build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void doLogin(View view) throws NoSuchAlgorithmException, KeyManagementException {
 
         EditText username = (EditText) findViewById(R.id.username_input);
         EditText password = (EditText) findViewById(R.id.password_input);
 
-        OkHttpClient client = getUnsafeOkHttpClient();
+        TextView error_box = (TextView) findViewById(R.id.login_error_box);
+
+        OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         String url = "https://10.0.2.2:8443/appAuth";
         //String params = "param=login&username=test&password=test";
 
@@ -115,9 +75,19 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                System.out.println(response.body().string());
+                //System.out.println(response.body().string());
+                String resp_string = response.body().string();
+                //System.out.println(resp_string);
+                if(!resp_string.startsWith("not")) {
+                    // start questionnaire home
+                    Intent homeIntent = new Intent(LoginActivity.this, Homepage.class);
+                    startActivity(homeIntent);
+                } else {
+                    error_box.setText("Error: failed to login");
+                }
             }
         });
 
     }
+
 }

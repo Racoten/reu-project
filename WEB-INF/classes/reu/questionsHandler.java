@@ -21,7 +21,8 @@ public class questionsHandler {
 	}
 
     public ArrayList<String> getEmailGeneralQuestions() {
-        String queryEmail = "SELECT QuestionText FROM emailquestions;";
+        //String queryEmail = "SELECT QuestionText FROM emailquestions;";
+        String queryEmail = "SELECT QuestionText FROM EmailQuestions;";
         ResultSet querySend = myDBConn.doSelect(queryEmail);
         
         if (!questionsEmail.isEmpty()) {
@@ -41,7 +42,8 @@ public class questionsHandler {
     }
 
     public ArrayList<String> getBrowserSecurityGeneralQuestions() {
-        String queryBrowser = "SELECT QuestionText FROM browsersecurityquestions;";
+        //String queryBrowser = "SELECT QuestionText FROM browsersecurityquestions;";
+        String queryBrowser = "SELECT QuestionText FROM BrowserSecurityQuestions;";
         ResultSet querySend = myDBConn.doSelect(queryBrowser);
 
         if (!questionsBrowserSecurity.isEmpty()) {
