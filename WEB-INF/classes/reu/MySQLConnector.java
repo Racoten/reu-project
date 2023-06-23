@@ -9,13 +9,11 @@ import java.sql.* ;
 public class MySQLConnector{
 
 	//Database credential <jdbc:<protocol>://<hostName>/<databaseName>>
-	private String DB_URL="jdbc:mysql://localhost:3306/cybersafe?serverTimezone=UTC";
-	//private String DB_URL="jdbc:mysql://localhost:3306/cybersafe";
+	private String DB_URL="jdbc:mysql://localhost/cybersafe";
 	
 	//Database authorized user information
 	private String USER="root";
-	//private String PASS="lol.exe1"
-	private String PASS="NewPassword123!";
+	private String PASS="lol.exe1";
    
    //Connection objects
    private Connection conn;
@@ -137,7 +135,8 @@ public class MySQLConnector{
 	public boolean doInsert(String query)
 	{
 		boolean res=false;
-		//try to insert a record to the selected table	
+		System.out.println(query);
+		//try to insert a record to the selected table
 		try{
 			res = stmt.execute(query);
 			System.out.println("MySQLConnector insertion: " + res);
@@ -148,8 +147,9 @@ public class MySQLConnector{
 			
 			e.printStackTrace();
 		}
-		return res;
-		
+		finally{
+			return res;
+		}
 			
 	}
 

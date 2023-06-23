@@ -1,17 +1,4 @@
-//This class belongs to the ut.JAR.CPEN410 package
 package reu;
-/********
-CPEN 410 Mobile, Web, and Internet programming
-
-This servlet perform a dummy authentication process
-if the user is authenticated, it sends a json objects containing: id, name, userName and email
-Required values:
-	userName: user
-	passWord: pass
-
-
-
-******************/
 //Import the java.sql package for managing the ResulSet objects
 import java.sql.* ;
 // Import required java libraries
@@ -24,6 +11,7 @@ import java.util.*;
 public class appAuth extends HttpServlet {
 
 	public MySQLConnector myDBConn;
+	public questionsHandler myQuestionsHandler;
 
 	public appAuth(){
 		//Create the MySQLConnector object
@@ -32,6 +20,7 @@ public class appAuth extends HttpServlet {
 		//Open the connection to the database
 		myDBConn.doConnection();
 
+		myQuestionsHandler = new questionsHandler();
 	}
 
 	private String message;
@@ -121,6 +110,22 @@ public class appAuth extends HttpServlet {
 			out.println(msg);
 			System.out.println(msg);
 		}
+
+		else if(param.equals("emailgeneral")) {
+			ArrayList<String> questions = myQuestionsHandler.getEmailGeneralQuestions();
+			String msg = "{";
+
+			for(int i = 0; i < questions.size(); i++) {
+				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
+				if(i < questions.size()-1) {
+					msg += ",";
+				}
+			}
+
+			msg += "}";
+			PrintWriter out = response.getWriter();
+			out.println(msg);
+		}
 	}
 
 	/****
@@ -129,7 +134,7 @@ public class appAuth extends HttpServlet {
 	public String doAuthentication(String username) {
 		String msg = "";
 		String fields = "*";
-		String tables = "Users, UserAnswers";
+		String tables = "users, useranswers";
 		String whereClause = "UserName = '" + username + "';";
 
 	
@@ -162,7 +167,7 @@ public class appAuth extends HttpServlet {
 
 		String hashingVal = hashingSha256(username + password);
 
-		table = "Users";
+		table = "users";
 		values = "'" + username + "', '" + email + "', '" + hashingVal + "'";
 
 		String query = "INSERT INTO " + table + " (UserName, Email, PasswordHash) VALUES (" + values + ");";
