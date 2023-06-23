@@ -112,7 +112,7 @@ public class appAuth extends HttpServlet {
 		}
 
 		else if(param.equals("emailgeneral")) {
-			ArrayList<String> questions = myQuestionsHandler.getEmailGeneralQuestions();
+			ArrayList<String> questions = myQuestionsHandler.getGeneralQuestions("emailquestions");
 			String msg = "{";
 
 			for(int i = 0; i < questions.size(); i++) {
@@ -128,7 +128,7 @@ public class appAuth extends HttpServlet {
 		}
 
 		else if(param.equals("browsersecuritygeneral")) {
-			ArrayList<String> questions = myQuestionsHandler.getBrowserSecurityGeneralQuestions();
+			ArrayList<String> questions = myQuestionsHandler.getGeneralQuestions("browsersecurityquestions");
 			String msg = "{";
 
 			for(int i = 0; i < questions.size(); i++) {
