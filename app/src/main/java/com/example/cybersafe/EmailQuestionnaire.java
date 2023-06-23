@@ -5,9 +5,13 @@ import static org.apache.http.conn.ssl.SSLSocketFactory.SSL;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -27,34 +31,30 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class SignupActivity extends AppCompatActivity {
+public class EmailQuestionnaire extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
+        setContentView(R.layout.activity_email_questionnaire);
+        getEmailQuestions();
     }
 
-    public void doSignup(View view) {
-        EditText username = (EditText) findViewById(R.id.username_signup);
-        EditText email = (EditText) findViewById(R.id.email_signup);
-        EditText password = (EditText) findViewById(R.id.password_signup);
+    public void getEmailQuestions() {
+        TextView question = (TextView) findViewById(R.id.question_box);
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         String url = "https://10.0.2.2:8443/appAuth";
-        //String params = "param=login&username=test&password=test";
 
         RequestBody body = new FormBody.Builder()
-                .add("param", "register")
-                .add("username", username.getText().toString())
-                .add("password", password.getText().toString())
-                .add("email", email.getText().toString())
+                .add("param", "emailgeneral")
                 .build();
 
         Request req = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
+
 
         client.newCall(req).enqueue(new Callback() {
             @Override
@@ -65,8 +65,19 @@ public class SignupActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                System.out.println(response.body().string());
+                //System.out.println(response.body().string());
+                JSONObject resp_string = null;
+                String formatted = null;
+                try {
+                    resp_string = new JSONObject(response.body().string());
+                    formatted = "1. "+resp_string.getString("1")+"\n2. "+resp_string.getString("2");
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+
+                question.setText(formatted);
             }
         });
+
     }
 }
