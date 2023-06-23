@@ -81,7 +81,7 @@ public class appAuth extends HttpServlet {
 
 				// Set response content type
 				response.setContentType("text/html");
-				StringBuilder msg = doAuthentication(username);
+				String msg = doAuthentication(username);
 
 				// Actual logic goes here.
 				PrintWriter out = response.getWriter();
@@ -147,29 +147,27 @@ public class appAuth extends HttpServlet {
 	/****
 		This method perform a dummy authentication process
 	***/
-	public StringBuilder doAuthentication(String username) {
+	public String doAuthentication(String username) {
 		String msg = "";
 		String fields = "*";
-		String tables = "users, useranswers";
+		String tables = "users";
 		String whereClause = "UserName = '" + username + "';";
 
-	
+		
 		String query = "SELECT " + fields + " FROM " + tables + " WHERE " + whereClause;
 		System.out.println(query);
-		StringBuilder json = new StringBuilder();
-	
+		String json = "";
+		
 		try {
 			ResultSet userInfo = myDBConn.doSelect(query);
-	
-			
 		
 			while (userInfo.next()) {
 				String email = userInfo.getString("email");
 		
-				json.append("{\n");
-				json.append("\t\"email\": \"" + email + "\",\n");
-				json.append("\t\"userName\": \"" + username + "\",\n");
-				json.append("},\n");
+				json += "{\n";
+				json += "\t\"email\": \"" + email + "\",\n";
+				json += "\t\"userName\": \"" + username + "\",\n";
+				json += "}\n";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -177,6 +175,7 @@ public class appAuth extends HttpServlet {
 		// Return the actual message
 		return json;
 	}
+
 
 	public String doRegister(String username, String email, String password) {
 		String msg = "";
