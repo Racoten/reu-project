@@ -126,6 +126,22 @@ public class appAuth extends HttpServlet {
 			PrintWriter out = response.getWriter();
 			out.println(msg);
 		}
+
+		else if(param.equals("browsersecuritygeneral")) {
+			ArrayList<String> questions = myQuestionsHandler.getBrowserSecurityGeneralQuestions();
+			String msg = "{";
+
+			for(int i = 0; i < questions.size(); i++) {
+				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
+				if(i < questions.size()-1) {
+					msg += ",";
+				}
+			}
+
+			msg += "}";
+			PrintWriter out = response.getWriter();
+			out.println(msg);
+		}
 	}
 
 	/****
@@ -158,7 +174,7 @@ public class appAuth extends HttpServlet {
 			e.printStackTrace();
 		}
 		// Return the actual message
-		return null;
+		return json;
 	}
 
 	public String doRegister(String username, String email, String password) {

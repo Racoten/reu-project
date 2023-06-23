@@ -22,7 +22,12 @@ public class questionsHandler {
 
     public ArrayList<String> getEmailGeneralQuestions() {
         String queryEmail = "SELECT QuestionText FROM emailquestions;";
-        ResultSet querySend = myDBConn.doSelect(queryEmail); 
+        ResultSet querySend = myDBConn.doSelect(queryEmail);
+        
+        if (!questionsEmail.isEmpty()) {
+            questionsEmail.clear();
+        }
+
         try {
             while (querySend.next()) {
                 questionsEmail.add(querySend.getString("QuestionText"));
@@ -35,17 +40,23 @@ public class questionsHandler {
         return questionsEmail;
     }
 
-    // public String getBrowserSecurityGeneralQuestions() {
-    //     ResultSet queryBrowserSecurity = "SELECT QuestionText FROM browsersecurityquestions;";
+    public ArrayList<String> getBrowserSecurityGeneralQuestions() {
+        String queryBrowser = "SELECT QuestionText FROM browsersecurityquestions;";
+        ResultSet querySend = myDBConn.doSelect(queryBrowser);
 
-    //     try {
-    //         while (queryBrowserSecurity.next()) {
-    //             questionsBrowserSecurity = 
-    //         }
-    //     } catch (Exception e) {
-    //         System.out.println(e);
-    //     }
+        if (!questionsBrowserSecurity.isEmpty()) {
+            questionsBrowserSecurity.clear();
+        }
 
-    //     return questionsBrowserSecurity;
-    // }
+        try {
+            while (querySend.next()) {
+                questionsBrowserSecurity.add(querySend.getString("QuestionText"));
+                System.out.println("Question being added: " + querySend.getString("QuestionText"));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return questionsBrowserSecurity;
+    }
 }
