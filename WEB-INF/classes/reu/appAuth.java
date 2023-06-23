@@ -81,7 +81,7 @@ public class appAuth extends HttpServlet {
 
 				// Set response content type
 				response.setContentType("text/html");
-				String msg = doAuthentication(username);
+				StringBuilder msg = doAuthentication(username);
 
 				// Actual logic goes here.
 				PrintWriter out = response.getWriter();
@@ -147,7 +147,7 @@ public class appAuth extends HttpServlet {
 	/****
 		This method perform a dummy authentication process
 	***/
-	public String doAuthentication(String username) {
+	public StringBuilder doAuthentication(String username) {
 		String msg = "";
 		String fields = "*";
 		String tables = "users, useranswers";
@@ -156,11 +156,12 @@ public class appAuth extends HttpServlet {
 	
 		String query = "SELECT " + fields + " FROM " + tables + " WHERE " + whereClause;
 		System.out.println(query);
+		StringBuilder json = new StringBuilder();
 	
 		try {
 			ResultSet userInfo = myDBConn.doSelect(query);
 	
-			StringBuilder json = new StringBuilder();
+			
 		
 			while (userInfo.next()) {
 				String email = userInfo.getString("email");
