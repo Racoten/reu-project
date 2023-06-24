@@ -9,16 +9,11 @@ import java.sql.* ;
 public class MySQLConnector{
 
 	//Database credential <jdbc:<protocol>://<hostName>/<databaseName>>
-
-	//private String DB_URL="jdbc:mysql://localhost/cybersafe";
-
-	// keep this url string as well
-	private String DB_URL = "jdbc:mysql://localhost:3306/cybersafe?serverTimezone=UTC";
+	private String DB_URL="jdbc:mysql://localhost/cybersafe";
 	
 	//Database authorized user information
 	private String USER="root";
-	//private String PASS="lol.exe1";
-	private String PASS="NewPassword123!";
+	private String PASS="lol.exe1";
    
    //Connection objects
    private Connection conn;
@@ -145,11 +140,9 @@ public class MySQLConnector{
 		try{
 			res = stmt.execute(query);
 			System.out.println("MySQLConnector insertion: " + res);
-			
 		}
 		catch(Exception e)
 		{
-			
 			e.printStackTrace();
 		}
 		finally{

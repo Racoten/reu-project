@@ -29,68 +29,69 @@ public class questionsHandler extends HttpServlet {
 		System.out.println("Receive request with parameter: " + param);
 
         if(param.equals("emailgeneral")) {
-			ArrayList<String> questions = getGeneralQuestions("emailquestions");
-			String msg = "{";
+            ArrayList<String> questions = getGeneralQuestions("emailquestions");
+            String msg = "{\"questions\": [";
 
-			for(int i = 0; i < questions.size(); i++) {
-				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
-				if(i < questions.size()-1) {
-					msg += ",";
-				}
-			}
+            for(int i = 0; i < questions.size(); i++) {
+                msg += "\"" + questions.get(i) + "\"";
+                if(i < questions.size()-1) {
+                    msg += ",";
+                }
+            }
 
-			msg += "}";
-			PrintWriter out = response.getWriter();
-			out.println(msg);
-		}
+            msg += "]}";
+            PrintWriter out = response.getWriter();
+            out.println(msg);
+        }
 
-		else if(param.equals("browsersecuritygeneral")) {
-			ArrayList<String> questions = getGeneralQuestions("browsersecurityquestions");
-			String msg = "{";
+        else if(param.equals("browsersecuritygeneral")) {
+            ArrayList<String> questions = getGeneralQuestions("browsersecurityquestions");
+            String msg = "{\"questions\": [";
 
-			for(int i = 0; i < questions.size(); i++) {
-				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
-				if(i < questions.size()-1) {
-					msg += ",";
-				}
-			}
+            for(int i = 0; i < questions.size(); i++) {
+                msg += "\"" + questions.get(i) + "\"";
+                if(i < questions.size()-1) {
+                    msg += ",";
+                }
+            }
 
-			msg += "}";
-			PrintWriter out = response.getWriter();
-			out.println(msg);
-		} 
-        
+            msg += "]}";
+            PrintWriter out = response.getWriter();
+            out.println(msg);
+        } 
+
         else if(param.equals("browsertargeted")) {
             ArrayList<String> questions = getTargetedQuestions("browsersecurityquestionstargeted", targetedTable);
-			String msg = "{";
+            String msg = "{\"questions\": [";
 
-			for(int i = 0; i < questions.size(); i++) {
-				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
-				if(i < questions.size()-1) {
-					msg += ",";
-				}
-			}
+            for(int i = 0; i < questions.size(); i++) {
+                msg += "\"" + questions.get(i) + "\"";
+                if(i < questions.size()-1) {
+                    msg += ",";
+                }
+            }
 
-			msg += "}";
-			PrintWriter out = response.getWriter();
-			out.println(msg);
+            msg += "]}";
+            PrintWriter out = response.getWriter();
+            out.println(msg);
         } 
-        
+
         else if(param.equals("emailtargeted")) {
             ArrayList<String> questions = getTargetedQuestions("emailquestionstargeted", targetedTable);
-			String msg = "{";
+            String msg = "{\"questions\": [";
 
-			for(int i = 0; i < questions.size(); i++) {
-				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
-				if(i < questions.size()-1) {
-					msg += ",";
-				}
-			}
+            for(int i = 0; i < questions.size(); i++) {
+                msg += "\"" + questions.get(i) + "\"";
+                if(i < questions.size()-1) {
+                    msg += ",";
+                }
+            }
 
-			msg += "}";
-			PrintWriter out = response.getWriter();
-			out.println(msg);
+            msg += "]}";
+            PrintWriter out = response.getWriter();
+            out.println(msg);
         }
+
 
         else {
             // Set response content type

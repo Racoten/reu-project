@@ -11,6 +11,7 @@ import java.util.*;
 public class appAuth extends HttpServlet {
 
 	public MySQLConnector myDBConn;
+	public SessionHandler sessionHandler;
 
 	public appAuth(){
 		//Create the MySQLConnector object
@@ -118,7 +119,8 @@ public class appAuth extends HttpServlet {
 		String tables = "users";
 		String whereClause = "UserName = '" + username + "';";
 
-		
+		sessionHandler = new SessionHandler(username);
+
 		String query = "SELECT " + fields + " FROM " + tables + " WHERE " + whereClause;
 		System.out.println(query);
 		String json = "";
@@ -147,6 +149,8 @@ public class appAuth extends HttpServlet {
 		String table, values;
 
 		String hashingVal = hashingSha256(username + password);
+
+		sessionHandler = new SessionHandler(username);
 
 		table = "users";
 		values = "'" + username + "', '" + email + "', '" + hashingVal + "'";

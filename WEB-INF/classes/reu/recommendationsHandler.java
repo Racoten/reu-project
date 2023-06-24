@@ -28,69 +28,70 @@ public class recommendationsHandler extends HttpServlet {
 
 		System.out.println("Receive request with parameter: " + param);
 
-        if(param.equals("emailgeneral")) {
-			ArrayList<String> questions = getGeneralRecommendations("emailrecommendations");
-			String msg = "{";
+		if(param.equals("emailgeneral")) {
+			ArrayList<String> recommendations = getGeneralRecommendations("emailrecommendations");
+			String msg = "{\"recommendations\": [";
 
-			for(int i = 0; i < questions.size(); i++) {
-				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
-				if(i < questions.size()-1) {
+			for(int i = 0; i < recommendations.size(); i++) {
+				msg += "\"" + recommendations.get(i) + "\"";
+				if(i < recommendations.size()-1) {
 					msg += ",";
 				}
 			}
 
-			msg += "}";
-			PrintWriter out = response.getWriter();
-			out.println(msg);
-		} 
-
-        else if(param.equals("browsersecuritygeneral")) {
-			ArrayList<String> questions = getGeneralRecommendations("browsersecurityrecommendations");
-			String msg = "{";
-
-			for(int i = 0; i < questions.size(); i++) {
-				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
-				if(i < questions.size()-1) {
-					msg += ",";
-				}
-			}
-
-			msg += "}";
+			msg += "]}";
 			PrintWriter out = response.getWriter();
 			out.println(msg);
 		}
 
-        else if(param.equals("emailtargeted")) {
-			ArrayList<String> questions = getTargetedRecommendations("emailrecommendationstargeted", targetedTable);
-			String msg = "{";
+		else if(param.equals("browsersecuritygeneral")) {
+			ArrayList<String> recommendations = getGeneralRecommendations("browsersecurityrecommendations");
+			String msg = "{\"recommendations\": [";
 
-			for(int i = 0; i < questions.size(); i++) {
-				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
-				if(i < questions.size()-1) {
+			for(int i = 0; i < recommendations.size(); i++) {
+				msg += "\"" + recommendations.get(i) + "\"";
+				if(i < recommendations.size()-1) {
 					msg += ",";
 				}
 			}
 
-			msg += "}";
+			msg += "]}";
 			PrintWriter out = response.getWriter();
 			out.println(msg);
 		} 
 
-        else if(param.equals("browsersecuritytargeted")) {
-			ArrayList<String> questions = getTargetedRecommendations("browsersecurityrecommendationstargeted", targetedTable);
-			String msg = "{";
+		else if(param.equals("emailtargeted")) {
+			ArrayList<String> recommendations = getTargetedRecommendations("emailrecommendationstargeted", targetedTable);
+			String msg = "{\"recommendations\": [";
 
-			for(int i = 0; i < questions.size(); i++) {
-				msg += "\"" + (i+1) + "\": \"" + questions.get(i) + "\"";
-				if(i < questions.size()-1) {
+			for(int i = 0; i < recommendations.size(); i++) {
+				msg += "\"" + recommendations.get(i) + "\"";
+				if(i < recommendations.size()-1) {
 					msg += ",";
 				}
 			}
 
-			msg += "}";
+			msg += "]}";
+			PrintWriter out = response.getWriter();
+			out.println(msg);
+		} 
+
+		else if(param.equals("browsersecuritytargeted")) {
+			ArrayList<String> recommendations = getTargetedRecommendations("browsersecurityrecommendationstargeted", targetedTable);
+			String msg = "{\"recommendations\": [";
+
+			for(int i = 0; i < recommendations.size(); i++) {
+				msg += "\"" + recommendations.get(i) + "\"";
+				if(i < recommendations.size()-1) {
+					msg += ",";
+				}
+			}
+
+			msg += "]}";
 			PrintWriter out = response.getWriter();
 			out.println(msg);
 		}
+
 	 }
 
      public ArrayList<String> getGeneralRecommendations(String type) {
