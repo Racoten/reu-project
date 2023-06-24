@@ -73,4 +73,20 @@
     <url-pattern>/questionsHandler</url-pattern>
 
    </servlet-mapping>
+
+   <servlet>
+
+    <servlet-name>recommendationsHandler</servlet-name>
+
+    <servlet-class>reu.recommendationsHandler</servlet-class>
+
+   </servlet>
+
+   <servlet-mapping>
+
+    <servlet-name>recommendationsHandler</servlet-name>
+
+    <url-pattern>/recommendationsHandler</url-pattern>
+
+   </servlet-mapping>
 </web-app>
