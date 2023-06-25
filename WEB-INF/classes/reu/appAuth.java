@@ -116,7 +116,7 @@ public class appAuth extends HttpServlet {
 	public String doAuthentication(String username) {
 		String msg = "";
 		String fields = "*";
-		String tables = "users";
+		String tables = "Users";
 		String whereClause = "UserName = '" + username + "';";
 
 		sessionHandler = new SessionHandler(username);
@@ -152,7 +152,7 @@ public class appAuth extends HttpServlet {
 
 		sessionHandler = new SessionHandler(username);
 
-		table = "users";
+		table = "Users";
 		values = "'" + username + "', '" + email + "', '" + hashingVal + "'";
 
 		String query = "INSERT INTO " + table + " (UserName, Email, PasswordHash) VALUES (" + values + ");";
