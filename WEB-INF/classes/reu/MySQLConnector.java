@@ -151,13 +151,6 @@ public class MySQLConnector{
 			
 	}
 
-	/***********
-		Debugging method
-			This method creates an applicationDBManager object, retrieves all departments in the database, and close the connection to the database
-			@parameters:
-				args[]: String array 
-			@returns:
-	*/
 	public static void main(String[] args)
 	{	
 	}
