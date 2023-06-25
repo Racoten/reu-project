@@ -42,15 +42,19 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         TextView question = (TextView) findViewById(R.id.browser_questions);
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
-        String url = "https://10.0.2.2:8443/appAuth";
+        String url = "https://10.0.2.2:8443/questionsHandler?param=browsersecuritygeneral";
 
+        /*
         RequestBody body = new FormBody.Builder()
                 .add("param", "browsersecuritygeneral")
                 .build();
 
+
+         */
+
         Request req = new Request.Builder()
                 .url(url)
-                .post(body)
+                .get()
                 .build();
 
 

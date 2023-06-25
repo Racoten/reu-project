@@ -41,7 +41,9 @@ public class SignupActivity extends AppCompatActivity {
         EditText password = (EditText) findViewById(R.id.password_signup);
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
-        String url = "https://10.0.2.2:8443/appAuth";
+        //String url = "https://10.0.2.2:8443/appAuth";
+        String url = "https://192.168.0.32:8443/appAuth";
+
         //String params = "param=login&username=test&password=test";
 
         RequestBody body = new FormBody.Builder()
