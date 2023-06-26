@@ -3,6 +3,7 @@ package com.example.cybersafe;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
@@ -48,6 +49,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
     RadioButton yes;
     RadioButton no;
     Button next;
+    Button submit;
 
 
 
@@ -61,6 +63,9 @@ public class EmailQuestionnaire extends AppCompatActivity {
         no = findViewById(R.id.no_btn);
 
          */
+        next = findViewById(R.id.next_question);
+        submit = findViewById(R.id.submit);
+        submit.setVisibility(View.GONE);
         getEmailQuestions();
         getTargetedEmailQuestions();
         //showQuestions();
@@ -73,6 +78,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, qs);
         ListView ll = findViewById(R.id.question_view);
         ll.setAdapter(adapter);
+        ll.setMinimumHeight(80);
         ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -91,17 +97,29 @@ public class EmailQuestionnaire extends AppCompatActivity {
     }
 
     public void checkGeneralAnswer(View view) throws JSONException {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                next.setVisibility(View.GONE);
+                submit.setVisibility(View.VISIBLE);
+            }
+        });
+
         ArrayList<String> all_targeted = new ArrayList<String>();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, all_targeted);
         ListView tg = findViewById(R.id.target_view);
-
+        boolean t1_used = false;
+        boolean t2_used = false;
 
         if(general_questions[0].getAnswer() == "yes") {
+            t1_used = true;
             for(int i = 0; i < targeted1.length; i++) {
                 all_targeted.add(targeted1[i].getQuestionText());
+
             }
         }
         if(general_questions[1].getAnswer() == "yes") {
+            t2_used = true;
             for(int i = 0; i < targeted2.length; i++) {
                 all_targeted.add(targeted2[i].getQuestionText());
             }
@@ -109,16 +127,57 @@ public class EmailQuestionnaire extends AppCompatActivity {
 
         tg.setAdapter(adapter);
 
+        boolean finalT1_used = t1_used;
+        boolean finalT2_used = t2_used;
         tg.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 CheckedTextView chked = (CheckedTextView) view;
                 chked.setChecked(!chked.isChecked());
 
-                // TODO: save question status
+                // get question text
+                String current = all_targeted.get(i);
+                //System.out.println(findQuestion(i, all_targeted));
+                // check in targeted1 if being used
+                if(finalT1_used) {
+                    Question found = findQuestion(current, targeted1);
+                    //System.out.println(found.getQuestionText());
+                    if(chked.isChecked()) {
+                        found.setAnswer("yes");
+                    } else {
+                        found.setAnswer("no");
+                    }
+                    //System.out.println(found.getAnswer());
+                } else if(finalT2_used) {
+                    Question found = findQuestion(current, targeted2);
+                    //System.out.println(found.getQuestionText());
+                    if(chked.isChecked()) {
+                        found.setAnswer("yes");
+                    } else {
+                        found.setAnswer("no");
+                    }
+                    //System.out.println(found.getAnswer());
+                }
             }
         });
 
+    }
+
+    public void startRecommendationAcitivity(View view) {
+        Intent rec = new Intent(this, RecommendationsActivity.class);
+        rec.putExtra("targeted_questions_1", targeted1);
+        rec.putExtra("targeted_questions_2", targeted2);
+        rec.putExtra("general_questions", general_questions);
+        startActivity(rec);
+    }
+
+    private Question findQuestion(String ques, Question[] q_arr) {
+        for(int i = 0; i < q_arr.length; i++) {
+            if(q_arr[i].getQuestionText() == ques) {
+                return q_arr[i];
+            }
+        }
+        return null;
     }
 
     public void getEmailQuestions() {

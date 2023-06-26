@@ -1,6 +1,8 @@
 package com.example.cybersafe;
 
-public class Question {
+import java.io.Serializable;
+
+public class Question implements Serializable {
     String question_text;
     String answer;
 
