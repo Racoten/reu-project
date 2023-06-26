@@ -17,6 +17,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".RecommendationsActivity"
+            android:exported="false" />
+        <activity
             android:name=".BrowserSecurityQuestionnaire"
             android:exported="false" />
         <activity

@@ -49,7 +49,9 @@ public class LoginActivity extends AppCompatActivity {
         TextView error_box = (TextView) findViewById(R.id.login_error_box);
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
-        String url = "https://10.0.2.2:8443/appAuth";
+        //String url = "https://10.0.2.2:8443/appAuth";
+        String url = "https://192.168.0.32:8443/appAuth";
+
         //String params = "param=login&username=test&password=test";
 
         RequestBody body = new FormBody.Builder()
