@@ -1,13 +1,17 @@
 ```sql
+DROP DATABASE `cybersafe`;
+
 CREATE DATABASE `cybersafe`;
 
+use `cybersafe`;
+
 CREATE TABLE `Users` (
-    `UserID` INT AUTO_INCREMENT,
     `UserName` VARCHAR(255) NOT NULL,
     `Email` VARCHAR(255) UNIQUE,
     `PasswordHash` MEDIUMTEXT NOT NULL,
+    `token` MEDIUMTEXT,
     `RegistrationDate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(`UserID`)
+    PRIMARY KEY(`UserName`)
 );
 
 CREATE TABLE `AttackTypes` (
@@ -18,11 +22,11 @@ CREATE TABLE `AttackTypes` (
 
 CREATE TABLE `Questionnaires` (
     `QuestionnaireID` INT AUTO_INCREMENT,
-    `UserID` INT,
+    `UserName` VARCHAR(255),
     `AttackTypeID` INT,
     `Date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(`QuestionnaireID`),
-    FOREIGN KEY(`UserID`) REFERENCES `Users`(`UserID`),
+    FOREIGN KEY(`UserName`) REFERENCES `Users`(`UserName`),
     FOREIGN KEY(`AttackTypeID`) REFERENCES `AttackTypes`(`AttackTypeID`)
 );
 
@@ -72,11 +76,11 @@ CREATE TABLE `QuestionnaireQuestions` (
 CREATE TABLE `UserAnswers` (
     `QuestionnaireID` INT,
     `QuestionID` INT,
-    `UserID` INT,
+    `UserName` VARCHAR(255),
     `Answer` VARCHAR(255),
-    PRIMARY KEY(`QuestionnaireID`, `QuestionID`, `UserID`),
+    PRIMARY KEY(`QuestionnaireID`, `QuestionID`, `UserName`),
     FOREIGN KEY(`QuestionnaireID`) REFERENCES `Questionnaires`(`QuestionnaireID`),
-    FOREIGN KEY(`UserID`) REFERENCES `Users`(`UserID`)
+    FOREIGN KEY(`UserName`) REFERENCES `Users`(`UserName`)
 );
 
 CREATE TABLE `EmailRecommendations` (
@@ -132,12 +136,12 @@ INSERT INTO `AttackTypes` (`AttackTypeName`) VALUES
     ('BrowserSecurity');
 
 INSERT INTO `EmailQuestions` (`QuestionText`) VALUES 
-    ('Are there any links in the email body? Yes/No/Maybe'),
-    ('Is this spam - are you expecting an email from this source? Yes/No/Maybe');
+    ('Are there any links in the email body?'),
+    ('Is this spam - are you expecting an email from this source?');
 
 INSERT INTO `BrowserSecurityQuestions` (`QuestionText`) VALUES 
-    ('Are you being redirected to another page? Yes/No/Maybe'),
-    ('Is the user currently on an open wifi network? Yes/No');
+    ('Are you being redirected to another page?'),
+    ('Is the user currently on an open wifi network?');
 
 INSERT INTO `EmailQuestionsTargeted1` (`QuestionText`) VALUES 
     ('Does the sender email belong to a public webmail server (gmail, yahoo, hotmail)?'),
@@ -200,5 +204,4 @@ INSERT INTO `BrowserSecurityRecommendationsTargeted2` (`TargetedQuestionID`, `Re
     (2, 'Look for unusual or suspicious elements in the website design. This can be a sign of a phishing website.'),
     (3, 'Avoid clicking on advertisements that redirect to unfamiliar websites.'),
     (4, 'Always consider what permissions a website is asking for. Avoid granting permissions if they are not necessary for the site functionality.');
-
 ```
