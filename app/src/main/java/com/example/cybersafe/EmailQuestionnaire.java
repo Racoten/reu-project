@@ -90,13 +90,9 @@ public class EmailQuestionnaire extends AppCompatActivity {
             //no_btn = box.findViewHolderForAdapterPosition(i).itemView.findViewById(R.id.no_btn);
 
             if(general_questions.get(i).getAnswer() == "yes") {
-                if(i == 0) {
-                    // targeted 1
-                    getTargeted1Questions();
-                } else if(i == 1) {
-                    // targeted 2
-                    getTargeted2Questions();
-                }
+                Integer temp = i+1;
+                String tbl = temp.toString();
+                getTargetedQuestions(tbl);
             }
         }
         // remove next button
@@ -173,148 +169,52 @@ public class EmailQuestionnaire extends AppCompatActivity {
 
     }
 
-
-    public void getTargeted1Questions() {
+    public void getTargetedQuestions(String targetedtable) {
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
-        String url1 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=1";
+        String url1 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=" + targetedtable;
 
 
 
         Request req = new Request.Builder()
-                .url(url1)
-                .get()
-                .build();
-        client.newCall(req).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
+                 .url(url1)
+                 .get()
+                 .build();
+         client.newCall(req).enqueue(new Callback() {
+             @Override
+             public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                 e.printStackTrace();
 
             }
 
-            @Override
+           @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 //System.out.println(response.body().string());
 
                 try {
-                    JSONObject obj = new JSONObject(response.body().string());
-                    JSONArray t1 = obj.getJSONArray("questions");
-                    //targ1_answered = new Integer[t1.length()];
+                   JSONObject obj = new JSONObject(response.body().string());
+                    JSONArray t = obj.getJSONArray("questions");
+                     //targ1_answered = new Integer[t1.length()];
                     //targeted1 = new Question[t1.length()];
-                    for (int i = 0; i < t1.length(); i++) {
-                        //targeted1[i] = new Question(t1.getString(i), "");
-                        targeted_all.add(new Question(t1.getString(i), "no"));
+                   for (int i = 0; i < t.length(); i++) {
+                       //targeted1[i] = new Question(t1.getString(i), "");
+                        targeted_all.add(new Question(t.getString(i), "no"));
                     }
-                    // adapter dataset is done after the second targeted list is loaded
+                   // adapter dataset is done after the second targeted list is loaded
                     //System.out.println(targeted1.toString());
 
-                    runOnUiThread(new Runnable() {
-                        @Override
+                   runOnUiThread(new Runnable() {
+                       @Override
                         public void run() {
                             targ_adapter.notifyDataSetChanged();
-                        }
-                    });
+                       }
+                   });
 
 
-                } catch (JSONException e) {
+               } catch (JSONException e) {
                     throw new RuntimeException(e);
-                }
-            }
+              }
+          }
         });
     }
-    public void getTargeted2Questions() {
-        //String url2 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=2";
-        String url2 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=2";
-
-        OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
-
-        Request req = new Request.Builder()
-                .url(url2)
-                .get()
-                .build();
-
-        client.newCall(req).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                //System.out.println(response.body().string());
-
-                try {
-                    JSONObject obj = new JSONObject(response.body().string());
-                    JSONArray t2 = obj.getJSONArray("questions");
-                    //targ2_answered = new Integer[t2.length()];
-                    //targeted2 = new Question[t2.length()];
-                    for(int i = 0; i < t2.length(); i++) {
-                        //targeted2[i] = new Question(t2.getString(i), "");
-                        targeted_all.add(new Question(t2.getString(i), "no"));
-                    }
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            targ_adapter.notifyDataSetChanged();
-                        }
-                    });
-
-                    //System.out.println(targeted2.toString());
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-    }
-
-    // public void getTargetedQuestions(String targetedtable) {
-    //     OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
-    //     //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
-    //     String url1 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=" + targetedtable;
-
-
-
-    //     Request req = new Request.Builder()
-    //             .url(url1)
-    //             .get()
-    //             .build();
-    //     client.newCall(req).enqueue(new Callback() {
-    //         @Override
-    //         public void onFailure(@NonNull Call call, @NonNull IOException e) {
-    //             e.printStackTrace();
-
-    //         }
-
-    //         @Override
-    //         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-    //             //System.out.println(response.body().string());
-
-    //             try {
-    //                 JSONObject obj = new JSONObject(response.body().string());
-    //                 JSONArray t = obj.getJSONArray("questions");
-    //                 //targ1_answered = new Integer[t1.length()];
-    //                 //targeted1 = new Question[t1.length()];
-    //                 for (int i = 0; i < t.length(); i++) {
-    //                     //targeted1[i] = new Question(t1.getString(i), "");
-    //                     targeted_all.add(new Question(t.getString(i), "no"));
-    //                 }
-    //                 // adapter dataset is done after the second targeted list is loaded
-    //                 //System.out.println(targeted1.toString());
-
-    //                 runOnUiThread(new Runnable() {
-    //                     @Override
-    //                     public void run() {
-    //                         targ_adapter.notifyDataSetChanged();
-    //                     }
-    //                 });
-
-
-    //             } catch (JSONException e) {
-    //                 throw new RuntimeException(e);
-    //             }
-    //         }
-    //     });
-    // }
 }
