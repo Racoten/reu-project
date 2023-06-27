@@ -39,7 +39,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 /*
 
-TODO: Sometimes when both general questions are selected, not all the targeted questions show up,
+    Sometimes when both general questions are selected, not all the targeted questions show up,
     this could be due to the arraylist add statements being in the async portion of the methods.
 
 
@@ -51,7 +51,6 @@ public class EmailQuestionnaire extends AppCompatActivity {
     private RecyclerView box;
     // 2 different adapter views are used
     // switching the answer text requires them to be apart of the adapter/holder method system
-    // recycleviews can only hold 1 arraylist (?)
     private RecyclerView target_box;
     private RecyclerView target2;
     private QuestionAdapter adapter;
@@ -99,10 +98,6 @@ public class EmailQuestionnaire extends AppCompatActivity {
         // note: general questions can't be removed without app crashing
 
         for(int i = 0; i < general_questions.size(); i++) {
-            //System.out.println(general_questions.get(i).getQuestionText()+" "+general_questions.get(i).getAnswer());
-
-            //yes_btn = box.findViewHolderForAdapterPosition(i).itemView.findViewById(R.id.yes_btn);
-            //no_btn = box.findViewHolderForAdapterPosition(i).itemView.findViewById(R.id.no_btn);
 
             if(general_questions.get(i).getAnswer() == "yes") {
                 Integer temp = i+1;
@@ -130,16 +125,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
         startActivity(rec);
     }
 
-
-
-    /*
-    Get and display questions here (helper methods ok, pass individual strings)
-    Because async network call required, reading general_questions outside of getEmailQuestions causes nullpointerexception
-    due to task of reading Question[] general_questions not being finished
-     */
     public void getEmailQuestions() {
-        JSONObject resp_obj = null;
-        JSONArray array = null;
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
@@ -179,7 +165,6 @@ public class EmailQuestionnaire extends AppCompatActivity {
                         }
                     });
 
-                    //startGeneralQuestions(general_questions);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -223,13 +208,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
                        } else if(Objects.equals(targetedtable, "2")) {
                            targeted_2.add(new Question(t.getString(i), "no"));
                        }
-
-
-                       //System.out.println(t.getString(i));
-                       //targeted_all.add(new Question(t.getString(i), "no"));
                     }
-                   // adapter dataset is done after the second targeted list is loaded
-                    //System.out.println(targeted1.toString());
 
                    runOnUiThread(new Runnable() {
                        @Override

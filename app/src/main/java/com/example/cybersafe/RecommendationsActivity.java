@@ -25,6 +25,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/*
+TODO: add String parcel so it knows whether to fetch email or browser recommendations
+ */
 public class RecommendationsActivity extends AppCompatActivity {
     private ArrayList<Question> targeted1 = new ArrayList<>();
     private ArrayList<Question> targeted2 = new ArrayList<>();
@@ -39,7 +42,6 @@ public class RecommendationsActivity extends AppCompatActivity {
     private boolean showGeneral1 = false;
     private boolean showGeneral2 = false;
 
-    //@SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,16 +50,6 @@ public class RecommendationsActivity extends AppCompatActivity {
         general = i.getParcelableArrayListExtra("general");
         targeted1 = i.getParcelableArrayListExtra("targeted1");
         targeted2 = i.getParcelableArrayListExtra("targeted2");
-        /*
-        for(int k = 0; k < general.size(); k++) {
-            System.out.println(general.get(k).getQuestionText());
-        }
-
-        for(int k = 0; k < targeted.size(); k++) {
-            System.out.println(targeted.get(k).getQuestionText());
-        }
-
-         */
 
         recs = findViewById(R.id.recommendation_view);
         recs.setLayoutManager(new LinearLayoutManager(this));
