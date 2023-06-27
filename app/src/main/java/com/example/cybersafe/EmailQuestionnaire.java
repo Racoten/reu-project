@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -29,33 +30,41 @@ import org.w3c.dom.Text;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+/*
 
+TODO: Sometimes when both general questions are selected, not all the targeted questions show up,
+    this could be due to the arraylist add statements being in the async portion of the methods.
+
+
+ */
 public class EmailQuestionnaire extends AppCompatActivity {
-
-    //JSONArray general_questions;
-    // TODO: change name to all_questions to avoid confusion, keep as arraylist hooked up to adapter
     ArrayList<Question> general_questions = new ArrayList<>();
-    ArrayList<Question> targeted_all = new ArrayList<>();
-    Question[] targeted1;
-    Question[] targeted2;
+    ArrayList<Question> targeted_1 = new ArrayList<>();
+    ArrayList<Question> targeted_2 = new ArrayList<>();
     private RecyclerView box;
+    // 2 different adapter views are used
+    // switching the answer text requires them to be apart of the adapter/holder method system
+    // recycleviews can only hold 1 arraylist (?)
     private RecyclerView target_box;
+    private RecyclerView target2;
     private QuestionAdapter adapter;
     private QuestionAdapter targ_adapter;
+    private QuestionAdapter targ2_adapter;
     private RadioButton yes_btn;
     private RadioButton no_btn;
     private Button next;
     private Button submit;
 
-    // have array list of all questions being display (targeted and general), which can be modified with questions in general and targeted lists
 
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,16 +73,22 @@ public class EmailQuestionnaire extends AppCompatActivity {
 
         box = findViewById(R.id.q_box);
         target_box = findViewById(R.id.target_box);
+        target2 = findViewById(R.id.target2);
+
         next = findViewById(R.id.next_question);
         submit = findViewById(R.id.submit_btn);
 
         box.setLayoutManager(new LinearLayoutManager(this));
         target_box.setLayoutManager(new LinearLayoutManager(this));
+        target2.setLayoutManager(new LinearLayoutManager(this));
+
         adapter = new QuestionAdapter(this, general_questions);
-        targ_adapter = new QuestionAdapter(this, targeted_all);
+        targ_adapter = new QuestionAdapter(this, targeted_1);
+        targ2_adapter = new QuestionAdapter(this, targeted_2);
 
         box.setAdapter(adapter);
         target_box.setAdapter(targ_adapter);
+        target2.setAdapter(targ2_adapter);
         getEmailQuestions();
 
         // notifyDataSetChanged has to run inside of ui thread runnable, inside getEmailQuestions()
@@ -101,6 +116,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
         // show submit button
         submit.setVisibility(View.VISIBLE);
         target_box.setVisibility(View.VISIBLE);
+        target2.setVisibility(View.VISIBLE);
     }
 
     public void startRecommendations(View view) {
@@ -108,7 +124,8 @@ public class EmailQuestionnaire extends AppCompatActivity {
         //System.out.println(targeted_all.size());
 
         Intent rec = new Intent(this, RecommendationsActivity.class);
-        rec.putParcelableArrayListExtra("targeted", targeted_all);
+        rec.putParcelableArrayListExtra("targeted1", targeted_1);
+        rec.putParcelableArrayListExtra("targeted2", targeted_2);
         rec.putParcelableArrayListExtra("general", general_questions);
         startActivity(rec);
     }
@@ -200,7 +217,16 @@ public class EmailQuestionnaire extends AppCompatActivity {
                     //targeted1 = new Question[t1.length()];
                    for (int i = 0; i < t.length(); i++) {
                        //targeted1[i] = new Question(t1.getString(i), "");
-                        targeted_all.add(new Question(t.getString(i), "no"));
+
+                       if(Objects.equals(targetedtable, "1")) {
+                           targeted_1.add(new Question(t.getString(i), "no"));
+                       } else if(Objects.equals(targetedtable, "2")) {
+                           targeted_2.add(new Question(t.getString(i), "no"));
+                       }
+
+
+                       //System.out.println(t.getString(i));
+                       //targeted_all.add(new Question(t.getString(i), "no"));
                     }
                    // adapter dataset is done after the second targeted list is loaded
                     //System.out.println(targeted1.toString());
@@ -209,6 +235,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
                        @Override
                         public void run() {
                             targ_adapter.notifyDataSetChanged();
+                            targ2_adapter.notifyDataSetChanged();
                        }
                    });
 
