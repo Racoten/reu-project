@@ -97,8 +97,10 @@ public class EmailQuestionnaire extends AppCompatActivity {
         }
         // remove next button
         next.setVisibility(View.INVISIBLE);
+        box.setVisibility(View.INVISIBLE);
         // show submit button
         submit.setVisibility(View.VISIBLE);
+        target_box.setVisibility(View.VISIBLE);
     }
 
     public void startRecommendations(View view) {
