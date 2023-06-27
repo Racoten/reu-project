@@ -24,9 +24,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class RecommendationsActivity extends AppCompatActivity {
-    Question[] targeted1;
-    Question[] targeted2;
-    Question[] general;
+    private ArrayList<Question> targeted = new ArrayList<>();
+    private ArrayList<Question> general = new ArrayList<>();
     JSONArray gen_rec;
     JSONArray t1_rec;
     JSONArray t2_rec;
@@ -37,6 +36,17 @@ public class RecommendationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recommendations);
         Intent i = getIntent();
+        general = i.getParcelableArrayListExtra("general");
+        targeted = i.getParcelableArrayListExtra("targeted");
+
+        for(int k = 0; k < general.size(); k++) {
+            System.out.println(general.get(k).getQuestionText());
+        }
+
+        for(int k = 0; k < targeted.size(); k++) {
+            System.out.println(targeted.get(k).getQuestionText());
+        }
+
         /*
         targeted1 = (Question[]) i.getSerializableExtra("targeted_questions_1");
         targeted2 = (Question[]) i.getSerializableExtra("targeted_questions_2");
@@ -48,6 +58,7 @@ public class RecommendationsActivity extends AppCompatActivity {
         getTargetedEmailRecommendations();
 
         // TODO: display targeted recommendations, show only for questions answered yes
+        // check question answer text, Question arraylists will be passed
         //displayRecommendations();
     }
 
@@ -74,7 +85,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                 try {
                     JSONObject obj = new JSONObject(response.body().string());
                     gen_rec = obj.getJSONArray("recommendations");
-                    System.out.println(gen_rec);
+                    //System.out.println(gen_rec);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -108,7 +119,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                 try {
                     JSONObject obj = new JSONObject(response.body().string());
                     t1_rec = obj.getJSONArray("recommendations");
-                    System.out.println(t1_rec);
+                    //System.out.println(t1_rec);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -133,7 +144,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                 try {
                     JSONObject ob = new JSONObject(response.body().string());
                     t2_rec = ob.getJSONArray("recommendations");
-                    System.out.println(t2_rec);
+                    //System.out.println(t2_rec);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -141,18 +152,4 @@ public class RecommendationsActivity extends AppCompatActivity {
         });
     }
 
-    public void displayRecommendations() {
-        ListView rlist = findViewById(R.id.rec_list);
-        ArrayList<String> rectext = new ArrayList<>();
-        for(int i = 0; i < gen_rec.length(); i++) {
-            try {
-                rectext.add(gen_rec.getString(i));
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        rlist.setAdapter(adapter);
-
-    }
 }

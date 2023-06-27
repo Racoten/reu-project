@@ -2,6 +2,8 @@ package com.example.cybersafe;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,152 +38,93 @@ import okhttp3.Response;
 
 public class EmailQuestionnaire extends AppCompatActivity {
 
-    String current_type = "general";
-    Integer general_number = 0;
-    Integer targeted1_number = 0;
-    Integer targeted2_number = 0;
-    Integer targeted_table = 1;
-
     //JSONArray general_questions;
-    Question[] general_questions;
+    // TODO: change name to all_questions to avoid confusion, keep as arraylist hooked up to adapter
+    ArrayList<Question> general_questions = new ArrayList<>();
+    ArrayList<Question> targeted_all = new ArrayList<>();
     Question[] targeted1;
     Question[] targeted2;
-    TextView qbox;
-    RadioButton yes;
-    RadioButton no;
-    Button next;
-    Button submit;
+    private RecyclerView box;
+    private RecyclerView target_box;
+    private QuestionAdapter adapter;
+    private QuestionAdapter targ_adapter;
+    private RadioButton yes_btn;
+    private RadioButton no_btn;
+    private Button next;
+    private Button submit;
 
+    // have array list of all questions being display (targeted and general), which can be modified with questions in general and targeted lists
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_questionnaire);
-        /*
-        qbox = findViewById(R.id.question_box);
-        yes = findViewById(R.id.yes_btn);
-        no = findViewById(R.id.no_btn);
 
-         */
+
+        box = findViewById(R.id.q_box);
+        target_box = findViewById(R.id.target_box);
         next = findViewById(R.id.next_question);
-        submit = findViewById(R.id.submit);
-        submit.setVisibility(View.GONE);
+        submit = findViewById(R.id.submit_btn);
+
+        box.setLayoutManager(new LinearLayoutManager(this));
+        target_box.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new QuestionAdapter(this, general_questions);
+        targ_adapter = new QuestionAdapter(this, targeted_all);
+
+        box.setAdapter(adapter);
+        target_box.setAdapter(targ_adapter);
         getEmailQuestions();
-        getTargetedEmailQuestions();
-        //showQuestions();
+
+        // notifyDataSetChanged has to run inside of ui thread runnable, inside getEmailQuestions()
+        //adapter.notifyDataSetChanged();
     }
 
-    public void showGeneralQuestions(Question[] gq) {
-        ArrayList<String> qs = new ArrayList<String>();
-        qs.add(gq[0].getQuestionText());
-        qs.add(gq[1].getQuestionText());
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, qs);
-        ListView ll = findViewById(R.id.question_view);
-        ll.setAdapter(adapter);
-        ll.setMinimumHeight(80);
-        ll.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                CheckedTextView chked = (CheckedTextView) view;
-                chked.setChecked(!chked.isChecked());
-                // record which question was checked
-                if(general_questions[i].getAnswer() == "no" || general_questions[i].getAnswer() == "") {
-                    general_questions[i].setAnswer("yes");
-                } else {
-                    general_questions[i].setAnswer("no");
-                }
-                //System.out.println(general_questions[i].getAnswer());
-            }
-        });
+    public void checkQuestions(View view) {
+        // note: general questions can't be removed without app crashing
 
-    }
+        for(int i = 0; i < general_questions.size(); i++) {
+            //System.out.println(general_questions.get(i).getQuestionText()+" "+general_questions.get(i).getAnswer());
 
-    public void checkGeneralAnswer(View view) throws JSONException {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                next.setVisibility(View.GONE);
-                submit.setVisibility(View.VISIBLE);
-            }
-        });
+            //yes_btn = box.findViewHolderForAdapterPosition(i).itemView.findViewById(R.id.yes_btn);
+            //no_btn = box.findViewHolderForAdapterPosition(i).itemView.findViewById(R.id.no_btn);
 
-        ArrayList<String> all_targeted = new ArrayList<String>();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, all_targeted);
-        ListView tg = findViewById(R.id.target_view);
-        boolean t1_used = false;
-        boolean t2_used = false;
-
-        if(general_questions[0].getAnswer() == "yes") {
-            t1_used = true;
-            for(int i = 0; i < targeted1.length; i++) {
-                all_targeted.add(targeted1[i].getQuestionText());
-
-            }
-        }
-        if(general_questions[1].getAnswer() == "yes") {
-            t2_used = true;
-            for(int i = 0; i < targeted2.length; i++) {
-                all_targeted.add(targeted2[i].getQuestionText());
-            }
-        }
-
-        tg.setAdapter(adapter);
-
-        boolean finalT1_used = t1_used;
-        boolean finalT2_used = t2_used;
-        tg.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                CheckedTextView chked = (CheckedTextView) view;
-                chked.setChecked(!chked.isChecked());
-
-                // get question text
-                String current = all_targeted.get(i);
-                //System.out.println(findQuestion(i, all_targeted));
-                // check in targeted1 if being used
-                if(finalT1_used) {
-                    Question found = findQuestion(current, targeted1);
-                    //System.out.println(found.getQuestionText());
-                    if(chked.isChecked()) {
-                        found.setAnswer("yes");
-                    } else {
-                        found.setAnswer("no");
-                    }
-                    //System.out.println(found.getAnswer());
-                } else if(finalT2_used) {
-                    Question found = findQuestion(current, targeted2);
-                    //System.out.println(found.getQuestionText());
-                    if(chked.isChecked()) {
-                        found.setAnswer("yes");
-                    } else {
-                        found.setAnswer("no");
-                    }
-                    //System.out.println(found.getAnswer());
+            if(general_questions.get(i).getAnswer() == "yes") {
+                if(i == 0) {
+                    // targeted 1
+                    getTargeted1Questions();
+                } else if(i == 1) {
+                    // targeted 2
+                    getTargeted2Questions();
                 }
             }
-        });
-
+        }
+        // remove next button
+        next.setVisibility(View.INVISIBLE);
+        // show submit button
+        submit.setVisibility(View.VISIBLE);
     }
 
-    public void startRecommendationAcitivity(View view) {
+    public void startRecommendations(View view) {
+
+        //System.out.println(targeted_all.size());
+
         Intent rec = new Intent(this, RecommendationsActivity.class);
-        rec.putExtra("targeted_questions_1", targeted1);
-        rec.putExtra("targeted_questions_2", targeted2);
-        rec.putExtra("general_questions", general_questions);
+        rec.putParcelableArrayListExtra("targeted", targeted_all);
+        rec.putParcelableArrayListExtra("general", general_questions);
         startActivity(rec);
     }
 
-    private Question findQuestion(String ques, Question[] q_arr) {
-        for(int i = 0; i < q_arr.length; i++) {
-            if(q_arr[i].getQuestionText() == ques) {
-                return q_arr[i];
-            }
-        }
-        return null;
-    }
 
+
+    /*
+    Get and display questions here (helper methods ok, pass individual strings)
+    Because async network call required, reading general_questions outside of getEmailQuestions causes nullpointerexception
+    due to task of reading Question[] general_questions not being finished
+     */
     public void getEmailQuestions() {
+        JSONObject resp_obj = null;
+        JSONArray array = null;
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
@@ -192,14 +136,13 @@ public class EmailQuestionnaire extends AppCompatActivity {
                 .get()
                 .build();
 
+        // Have to use enqueue and callback, synchronous way (execute) causes a network error
 
         client.newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
-
             }
-
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 //System.out.println(response.body().string());
@@ -208,20 +151,20 @@ public class EmailQuestionnaire extends AppCompatActivity {
                     JSONObject obj = new JSONObject(response.body().string());
                     //System.out.println(obj);
                     JSONArray gq = obj.getJSONArray("questions");
-                    //qbox.setText(general_questions.getString(0));
-                    //gen_answered = new Integer[gq.length()];
-                    general_questions = new Question[gq.length()];
                     for(int i = 0; i < gq.length(); i++) {
-                        general_questions[i] = new Question(gq.getString(i), "");
+                        // default answer to no
+                        general_questions.add(new Question(gq.getString(i), "no"));
+                        //System.out.println(general_questions.get(i).getQuestionText());
                     }
-                    //startGeneralQuestions(general_questions);
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            showGeneralQuestions(general_questions);
-
+                            adapter.notifyDataSetChanged();
                         }
                     });
+
+                    //startGeneralQuestions(general_questions);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -230,12 +173,11 @@ public class EmailQuestionnaire extends AppCompatActivity {
 
     }
 
-    public void getTargetedEmailQuestions() {
+
+    public void getTargeted1Questions() {
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
         String url1 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=1";
-        //String url2 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=2";
-        String url2 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=2";
 
 
 
@@ -258,18 +200,35 @@ public class EmailQuestionnaire extends AppCompatActivity {
                     JSONObject obj = new JSONObject(response.body().string());
                     JSONArray t1 = obj.getJSONArray("questions");
                     //targ1_answered = new Integer[t1.length()];
-                    targeted1 = new Question[t1.length()];
-                    for(int i = 0; i < t1.length(); i++) {
-                        targeted1[i] = new Question(t1.getString(i), "");
+                    //targeted1 = new Question[t1.length()];
+                    for (int i = 0; i < t1.length(); i++) {
+                        //targeted1[i] = new Question(t1.getString(i), "");
+                        targeted_all.add(new Question(t1.getString(i), "no"));
                     }
+                    // adapter dataset is done after the second targeted list is loaded
                     //System.out.println(targeted1.toString());
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            targ_adapter.notifyDataSetChanged();
+                        }
+                    });
+
+
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
+    }
+    public void getTargeted2Questions() {
+        //String url2 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=2";
+        String url2 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=2";
 
-        req = new Request.Builder()
+        OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
+
+        Request req = new Request.Builder()
                 .url(url2)
                 .get()
                 .build();
@@ -289,10 +248,19 @@ public class EmailQuestionnaire extends AppCompatActivity {
                     JSONObject obj = new JSONObject(response.body().string());
                     JSONArray t2 = obj.getJSONArray("questions");
                     //targ2_answered = new Integer[t2.length()];
-                    targeted2 = new Question[t2.length()];
+                    //targeted2 = new Question[t2.length()];
                     for(int i = 0; i < t2.length(); i++) {
-                        targeted2[i] = new Question(t2.getString(i), "");
+                        //targeted2[i] = new Question(t2.getString(i), "");
+                        targeted_all.add(new Question(t2.getString(i), "no"));
                     }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            targ_adapter.notifyDataSetChanged();
+                        }
+                    });
+
                     //System.out.println(targeted2.toString());
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
