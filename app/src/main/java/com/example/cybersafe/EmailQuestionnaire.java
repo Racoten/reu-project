@@ -268,4 +268,53 @@ public class EmailQuestionnaire extends AppCompatActivity {
             }
         });
     }
+
+    // public void getTargetedQuestions(String targetedtable) {
+    //     OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
+    //     //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
+    //     String url1 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=" + targetedtable;
+
+
+
+    //     Request req = new Request.Builder()
+    //             .url(url1)
+    //             .get()
+    //             .build();
+    //     client.newCall(req).enqueue(new Callback() {
+    //         @Override
+    //         public void onFailure(@NonNull Call call, @NonNull IOException e) {
+    //             e.printStackTrace();
+
+    //         }
+
+    //         @Override
+    //         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+    //             //System.out.println(response.body().string());
+
+    //             try {
+    //                 JSONObject obj = new JSONObject(response.body().string());
+    //                 JSONArray t = obj.getJSONArray("questions");
+    //                 //targ1_answered = new Integer[t1.length()];
+    //                 //targeted1 = new Question[t1.length()];
+    //                 for (int i = 0; i < t.length(); i++) {
+    //                     //targeted1[i] = new Question(t1.getString(i), "");
+    //                     targeted_all.add(new Question(t.getString(i), "no"));
+    //                 }
+    //                 // adapter dataset is done after the second targeted list is loaded
+    //                 //System.out.println(targeted1.toString());
+
+    //                 runOnUiThread(new Runnable() {
+    //                     @Override
+    //                     public void run() {
+    //                         targ_adapter.notifyDataSetChanged();
+    //                     }
+    //                 });
+
+
+    //             } catch (JSONException e) {
+    //                 throw new RuntimeException(e);
+    //             }
+    //         }
+    //     });
+    // }
 }
