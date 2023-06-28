@@ -122,6 +122,8 @@ public class EmailQuestionnaire extends AppCompatActivity {
         rec.putParcelableArrayListExtra("targeted1", targeted_1);
         rec.putParcelableArrayListExtra("targeted2", targeted_2);
         rec.putParcelableArrayListExtra("general", general_questions);
+        rec.putExtra("question_type", "email");
+
         startActivity(rec);
     }
 
