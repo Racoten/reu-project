@@ -50,6 +50,7 @@ public class RecommendationsActivity extends AppCompatActivity {
         general = i.getParcelableArrayListExtra("general");
         targeted1 = i.getParcelableArrayListExtra("targeted1");
         targeted2 = i.getParcelableArrayListExtra("targeted2");
+        String type = i.getStringExtra("question_type");
 
         recs = findViewById(R.id.recommendation_view);
         recs.setLayoutManager(new LinearLayoutManager(this));
@@ -58,15 +59,26 @@ public class RecommendationsActivity extends AppCompatActivity {
         recs.setAdapter(rec_adapter);
         //rec_adapter.notifyDataSetChanged();
 
-        getGeneralEmailRecommendations();
-        // first general question
+        if(Objects.equals(type, "email")) {
+            getGeneralEmailRecommendations();
 
-        if(Objects.equals(general.get(0).getAnswer(), "yes")) {
-            getTargetedEmailRecommendations("1", temp1, targeted1);
-        }
 
-        if(Objects.equals(general.get(1).getAnswer(), "yes")) {
-            getTargetedEmailRecommendations("2", temp2, targeted2);
+            if (Objects.equals(general.get(0).getAnswer(), "yes")) {
+                getTargetedEmailRecommendations("1", temp1, targeted1);
+            }
+
+            if (Objects.equals(general.get(1).getAnswer(), "yes")) {
+                getTargetedEmailRecommendations("2", temp2, targeted2);
+            }
+        } else if(Objects.equals(type, "browser")) {
+            getGeneralBrowserRecommendations();
+
+            if(Objects.equals(general.get(0).getAnswer(), "yes")) {
+                getTargetedBrowserRecommendations("1", temp1, targeted1);
+            }
+            if(Objects.equals(general.get(1).getAnswer(), "yes")) {
+                getTargetedBrowserRecommendations("2", temp2, targeted2);
+            }
         }
 
     }
@@ -168,6 +180,104 @@ public class RecommendationsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void getGeneralBrowserRecommendations() {
+        OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
+        //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
+        //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
+        String url = "https://192.168.0.32:8443/recommendationsHandler?param=browsersecuritygeneral";
+
+        Request req = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        client.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                System.out.println("Error fetching email general recommendations");
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                //JSONObject obj = null;
+                try {
+                    JSONObject obj = new JSONObject(response.body().string());
+                    JSONArray gen_rec = obj.getJSONArray("recommendations");
+                    //System.out.println(gen_rec.toString());
+                    for(int i = 0; i < gen_rec.length(); i++) {
+
+                        if(Objects.equals(general.get(i).getAnswer(), "yes")) {
+                            //System.out.println(gen_rec.getString(i));
+                            rec_all.add(new Recommendation(gen_rec.getString(i)));
+                        }
+
+
+
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            rec_adapter.notifyDataSetChanged();
+                        }
+                    });
+                    //System.out.println(gen_rec);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                //System.out.println(obj);
+            }
+        });
+
+    }
+
+    public void getTargetedBrowserRecommendations(String tablename, ArrayList<Recommendation> tempreclist, ArrayList<Question> comparelist) {
+        OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
+        //String url1 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
+        //String url1 = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
+        //String url2 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=2";
+        String url = "https://192.168.0.32:8443/recommendationsHandler?param=browsersecuritytargeted&targetedtable=" + tablename;
+        Integer tblint = new Integer(tablename);
+
+        Request req = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        client.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                System.out.println("Error fetching email general recommendations");
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                //JSONObject obj = null;
+                try {
+                    JSONObject obj = new JSONObject(response.body().string());
+                    JSONArray t1_rec = obj.getJSONArray("recommendations");
+                    //System.out.println(t1_rec);
+                    for (int i = 0; i < t1_rec.length(); i++) {
+                        if(Objects.equals(comparelist.get(i).getAnswer(), "yes")) {
+                            tempreclist.add(new Recommendation(t1_rec.getString(i)));
+
+                        }
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            rec_all.addAll(tempreclist);
+                            rec_adapter.notifyDataSetChanged();
+                        }
+                    });
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                //System.out.println(obj);
+            }
+        });
     }
 
 }

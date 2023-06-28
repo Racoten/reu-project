@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -75,6 +76,18 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         target1_box.setAdapter(targ1_adapter);
         target2_box.setAdapter(targ2_adapter);
         getBrowserGeneralQuestions();
+    }
+
+    public void startRecommendations(View view) {
+
+        //System.out.println(targeted_all.size());
+
+        Intent rec = new Intent(this, RecommendationsActivity.class);
+        rec.putParcelableArrayListExtra("targeted1", targeted_1);
+        rec.putParcelableArrayListExtra("targeted2", targeted_2);
+        rec.putParcelableArrayListExtra("general", general_questions);
+        rec.putExtra("question_type", "browser");
+        startActivity(rec);
     }
 
     public void checkQuestions(View view) {
