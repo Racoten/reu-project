@@ -33,36 +33,42 @@ CREATE TABLE `Questionnaires` (
 CREATE TABLE `EmailQuestions` (
     `QuestionID` INT AUTO_INCREMENT,
     `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
     PRIMARY KEY(`QuestionID`)
 );
 
 CREATE TABLE `BrowserSecurityQuestions` (
     `QuestionID` INT AUTO_INCREMENT,
     `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
     PRIMARY KEY(`QuestionID`)
 );
 
 CREATE TABLE `EmailQuestionsTargeted1` (
     `QuestionID` INT AUTO_INCREMENT,
     `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
     PRIMARY KEY(`QuestionID`)
 );
 
 CREATE TABLE `BrowserSecurityQuestionsTargeted1` (
     `QuestionID` INT AUTO_INCREMENT,
     `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
     PRIMARY KEY(`QuestionID`)
 );
 
 CREATE TABLE `EmailQuestionsTargeted2` (
     `QuestionID` INT AUTO_INCREMENT,
     `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
     PRIMARY KEY(`QuestionID`)
 );
 
 CREATE TABLE `BrowserSecurityQuestionsTargeted2` (
     `QuestionID` INT AUTO_INCREMENT,
     `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
     PRIMARY KEY(`QuestionID`)
 );
 
@@ -135,41 +141,41 @@ INSERT INTO `AttackTypes` (`AttackTypeName`) VALUES
     ('Email'), 
     ('BrowserSecurity');
 
-INSERT INTO `EmailQuestions` (`QuestionText`) VALUES 
-    ('Are there any links in the email body?'),
-    ('Is this spam - are you expecting an email from this source?');
+INSERT INTO `EmailQuestions` (`QuestionText`, `Weight`) VALUES 
+    ('Are there any links in the email body?', 5),
+    ('Is this spam - are you expecting an email from this source?', 6);
 
-INSERT INTO `BrowserSecurityQuestions` (`QuestionText`) VALUES 
-    ('Are you being redirected to another page?'),
-    ('Is the user currently on an open wifi network?');
+INSERT INTO `BrowserSecurityQuestions` (`QuestionText`, `Weight`) VALUES 
+    ('Are you being redirected to another page?', 8),
+    ('Is the user currently on an open wifi network?', 8);q
 
-INSERT INTO `EmailQuestionsTargeted1` (`QuestionText`) VALUES 
-    ('Does the sender email belong to a public webmail server (gmail, yahoo, hotmail)?'),
-    ('Does the URL use https?'),
-    ('Top level domain - is it a familiar extension (.com, .edu, .net, .mil), foreign/uncommon TLDs could be red flag'),
-    ('Second level domain - is it of a known company/org., is it misspelled?'),
-    ('If Path - What type of file does it appear to open - pdf or image more benign, scripts could be malicious (.php, .js, etc.)'),
-    ('Query strings - do any of these parameters have a username, password, or other piece of account information in them (sign query params will be used to transfer data to redirect link)');
+INSERT INTO `EmailQuestionsTargeted1` (`QuestionText`, `Weight`) VALUES 
+    ('Does the sender email belong to a public webmail server (gmail, yahoo, hotmail)?', 8),
+    ('Does the URL use https?', 5),
+    ('Top level domain - is it a familiar extension (.com, .edu, .net, .mil), foreign/uncommon TLDs could be red flag', 7),
+    ('Second level domain - is it of a known company/org., is it misspelled?', 9),
+    ('If Path - What type of file does it appear to open - pdf or image more benign, scripts could be malicious (.php, .js, etc.)', 10),
+    ('Query strings - do any of these parameters have a username, password, or other piece of account information in them (sign query params will be used to transfer data to redirect link)', 10);
 
-INSERT INTO `EmailQuestionsTargeted2` (`QuestionText`) VALUES 
-    ('Does the email convey a sense of urgency?'),
-    ('Is the email asking to give up sensitive information (financial, SSN, medical records, etc.)? (look at links to company site/login portal)'),
-    ('Does the email convey a sense of urgency in its message?'),
-    ('Does this organization/company normally send messages like this by email?');
+INSERT INTO `EmailQuestionsTargeted2` (`QuestionText`, `Weight`) VALUES 
+    ('Does the email convey a sense of urgency?', 8),
+    ('Is the email asking to give up sensitive information (financial, SSN, medical records, etc.)? (look at links to company site/login portal)', 10),
+    ('Does the email convey a sense of urgency in its message?', 8),
+    ('Does this organization/company normally send messages like this by email?', 7);
 
-INSERT INTO `BrowserSecurityQuestionsTargeted1` (`QuestionText`) VALUES 
-    ('Is the site asking for any permissions?'),
-    ('Is the site using https?'),
-    ('Does the site have a valid certificate?'),
-    ('Does the site use secure cookies?'),
-    ('Does the site have a visible and clear privacy policy?'),
-    ('Does the site have third party tracking scripts?');
+INSERT INTO `BrowserSecurityQuestionsTargeted1` (`QuestionText`, `Weight`) VALUES 
+    ('Is the site asking for any permissions?', 7),
+    ('Is the site using https?', 5),
+    ('Does the site have a valid certificate?', 8),
+    ('Does the site use secure cookies?', 8),
+    ('Does the site have a visible and clear privacy policy?', 6),
+    ('Does the site have third party tracking scripts?', 9);
 
-INSERT INTO `BrowserSecurityQuestionsTargeted2` (`QuestionText`) VALUES 
-    ('Does the site have an SSL certificate?'),
-    ('If the site is masquerading as a common service (Amazon, Facebook, etc.), do you notice anything different about the site’s appearance?'),
-    ('Are there advertisements that redirect to unfamiliar sites?'),
-    ('Is the site requesting certain permissions (location, camera, microphone, etc.)?');
+INSERT INTO `BrowserSecurityQuestionsTargeted2` (`QuestionText`, `Weight`) VALUES 
+    ('Does the site have an SSL certificate?', 8),
+    ('If the site is masquerading as a common service (Amazon, Facebook, etc.), do you notice anything different about the site’s appearance?', 10),
+    ('Are there advertisements that redirect to unfamiliar sites?', 8),
+    ('Is the site requesting certain permissions (location, camera, microphone, etc.)?', 8);
 
 INSERT INTO `EmailRecommendations` (`GeneralQuestionID`, `RecommendationText`) VALUES 
     (1, 'Be cautious of links in unsolicited emails, especially if they are asking for sensitive information. Consider contacting the sender directly through another method.'),
