@@ -28,7 +28,7 @@ public class recommendationsHandler extends HttpServlet {
 
 		System.out.println("Receive request with parameter: " + param);
 		if(param.equals("emailgeneral")) {
-			ArrayList<String> recommendations = getGeneralRecommendations("emailrecommendations");
+			ArrayList<String> recommendations = getGeneralRecommendations("EmailRecommendations");
 			StringBuilder msg = new StringBuilder("{ \"recommendations\": [");
 
 			for(int i = 0; i < recommendations.size(); i++) {
@@ -44,7 +44,7 @@ public class recommendationsHandler extends HttpServlet {
 		}
 
 		else if(param.equals("browsersecuritygeneral")) {
-			ArrayList<String> recommendations = getGeneralRecommendations("browsersecurityrecommendations");
+			ArrayList<String> recommendations = getGeneralRecommendations("BrowserSecurityRecommendations");
 			StringBuilder msg = new StringBuilder("{ \"recommendations\": [");
 
 			for(int i = 0; i < recommendations.size(); i++) {
@@ -60,7 +60,7 @@ public class recommendationsHandler extends HttpServlet {
 		}
 
 		else if(param.equals("emailtargeted")) {
-			ArrayList<String> recommendations = getTargetedRecommendations("emailrecommendationstargeted", targetedTable);
+			ArrayList<String> recommendations = getTargetedRecommendations("EmailRecommendationsTargeted", targetedTable);
 			StringBuilder msg = new StringBuilder("{ \"recommendations\": [");
 
 			for(int i = 0; i < recommendations.size(); i++) {
@@ -76,7 +76,7 @@ public class recommendationsHandler extends HttpServlet {
 		}
 
 		else if(param.equals("browsersecuritytargeted")) {
-			ArrayList<String> recommendations = getTargetedRecommendations("browsersecurityrecommendationstargeted", targetedTable);
+			ArrayList<String> recommendations = getTargetedRecommendations("BrowserSecurityRecommendationsTargeted", targetedTable);
 			StringBuilder msg = new StringBuilder("{ \"recommendations\": [");
 
 			for(int i = 0; i < recommendations.size(); i++) {

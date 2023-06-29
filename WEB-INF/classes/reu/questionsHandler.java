@@ -6,11 +6,13 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.util.*;
+import org.json.*;
 
 public class questionsHandler extends HttpServlet {
     public MySQLConnector myDBConn;
 
     ArrayList<String> questions = new ArrayList<String>();
+    ArrayList<Question> qlist = new  ArrayList<Question>();
     public String answer;
 
 	public questionsHandler(){
@@ -29,22 +31,6 @@ public class questionsHandler extends HttpServlet {
 		System.out.println("Receive request with parameter: " + param);
 
         if(param.equals("emailgeneral")) {
-<<<<<<< HEAD
-            ArrayList<String> questions = getGeneralQuestions("emailquestions");
-            StringBuilder msg = new StringBuilder("{ \"questions\": [");
-
-            for(int i = 0; i < questions.size(); i++) {
-                System.out.println(questions.get(i));
-                msg.append(questions.get(i));
-                if(i < questions.size()-1) {
-                    msg.append(",");
-                }
-            }
-
-            msg.append("]}");
-            PrintWriter out = response.getWriter();
-            out.println(msg.toString());
-=======
             ArrayList<Question> questions = getGeneralQuestions("EmailQuestions");
             JSONObject root_obj = new JSONObject();
             JSONArray resp_array = new JSONArray();
@@ -59,20 +45,9 @@ public class questionsHandler extends HttpServlet {
             //System.out.println(root_obj.toString());
             PrintWriter out = response.getWriter();
             out.println(root_obj.toString());
->>>>>>> d350f8e (json on backend)
         }
 
         else if(param.equals("browsersecuritygeneral")) {
-<<<<<<< HEAD
-            ArrayList<String> questions = getGeneralQuestions("browsersecurityquestions");
-            StringBuilder msg = new StringBuilder("{ \"questions\": [");
-
-            for(int i = 0; i < questions.size(); i++) {
-                msg.append(questions.get(i));
-                if(i < questions.size()-1) {
-                    msg.append(",");
-                }
-=======
             ArrayList<Question> questions = getGeneralQuestions("BrowserSecurityQuestions");
             JSONObject root_obj = new JSONObject();
             JSONArray resp_array = new JSONArray();
@@ -82,26 +57,9 @@ public class questionsHandler extends HttpServlet {
                 obj.put("id", questions.get(i).getId());
                 obj.put("weight", questions.get(i).getWeight());
                 resp_array.put(obj);
->>>>>>> d350f8e (json on backend)
             }
+            root_obj.put("questions", resp_array);
 
-<<<<<<< HEAD
-            msg.append("]}");
-            PrintWriter out = response.getWriter();
-            out.println(msg.toString());
-        }
-
-
-        else if(param.equals("browsertargeted")) {
-            ArrayList<String> questions = getTargetedQuestions("browsersecurityquestionstargeted", targetedTable);
-            StringBuilder msg = new StringBuilder("{ \"questions\": [");
-
-            for(int i = 0; i < questions.size(); i++) {
-                msg.append(questions.get(i));
-                if(i < questions.size()-1) {
-                    msg.append(",");
-                }
-=======
             PrintWriter out = response.getWriter();
             out.println(root_obj.toString());
         } 
@@ -116,25 +74,9 @@ public class questionsHandler extends HttpServlet {
                 obj.put("id", questions.get(i).getId());
                 obj.put("weight", questions.get(i).getWeight());
                 resp_array.put(obj);
->>>>>>> d350f8e (json on backend)
             }
+            root_obj.put("questions", resp_array);
 
-<<<<<<< HEAD
-            msg.append("]}");
-            PrintWriter out = response.getWriter();
-            out.println(msg.toString());
-        }
-
-        else if(param.equals("emailtargeted")) {
-            ArrayList<String> questions = getTargetedQuestions("emailquestionstargeted", targetedTable);
-            StringBuilder msg = new StringBuilder("{ \"questions\": [");
-
-            for(int i = 0; i < questions.size(); i++) {
-                msg.append(questions.get(i));
-                if(i < questions.size()-1) {
-                    msg.append(",");
-                }
-=======
             PrintWriter out = response.getWriter();
             out.println(root_obj.toString());
         } 
@@ -149,17 +91,11 @@ public class questionsHandler extends HttpServlet {
                 obj.put("id", questions.get(i).getId());
                 obj.put("weight", questions.get(i).getWeight());
                 resp_array.put(obj);
->>>>>>> d350f8e (json on backend)
             }
+            root_obj.put("questions", resp_array);
 
-<<<<<<< HEAD
-            msg.append("]}");
-            PrintWriter out = response.getWriter();
-            out.println(msg.toString());
-=======
             PrintWriter out = response.getWriter();
             out.println(root_obj.toString());
->>>>>>> d350f8e (json on backend)
         }
 
 
@@ -175,22 +111,6 @@ public class questionsHandler extends HttpServlet {
         }
 	 }
 
-<<<<<<< HEAD
-    public ArrayList<String> getGeneralQuestions(String type) {
-    String query = "SELECT * FROM " + type + ";";
-    ResultSet querySend = myDBConn.doSelect(query);
-
-    try {
-        while (querySend.next()) {
-            String questionId = querySend.getString("QuestionID");
-            String questionText = querySend.getString("QuestionText");
-            String weight = querySend.getString("Weight");
-
-            String questionJson = "{ \"QuestionID\": \"" + questionId + "\", \"QuestionText\": \"" + questionText + "\", \"Weight\": \"" + weight + "\" }";
-
-            System.out.println("Question being added: " + questionJson);
-            questions.add(questionJson);
-=======
     public ArrayList<Question> getGeneralQuestions(String type) {
         String query = "SELECT * FROM "+type+";";
         ResultSet querySend = myDBConn.doSelect(query);
@@ -208,37 +128,9 @@ public class questionsHandler extends HttpServlet {
             System.out.println(e);
         } finally { 
             return qlist;
->>>>>>> d350f8e (json on backend)
         }
     }
 
-<<<<<<< HEAD
-    return questions;
-}
-
-
-
-    public ArrayList<String> getTargetedQuestions(String type, String table) {
-        String query = "SELECT * FROM " + type + table + ";";
-        ResultSet querySend = myDBConn.doSelect(query);
-
-        try {
-            while (querySend.next()) {
-                String questionId = querySend.getString("QuestionID");
-                String questionText = querySend.getString("QuestionText");
-                String weight = querySend.getString("Weight");
-
-                String questionJson = "{ \"QuestionID\": \"" + questionId + "\", \"QuestionText\": \"" + questionText + "\", \"Weight\": \"" + weight + "\" }";
-
-                System.out.println("Question being added: " + questionJson);
-                questions.add(questionJson);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } 
-
-        return questions;
-=======
     public ArrayList<Question> getTargetedQuestions(String type, String table) {
         String query = "SELECT * FROM " + type + table + ";";
         ResultSet querySend = myDBConn.doSelect(query);
@@ -257,6 +149,5 @@ public class questionsHandler extends HttpServlet {
         } finally { 
             return qlist;
         }
->>>>>>> d350f8e (json on backend)
     }
 }

@@ -47,6 +47,8 @@ public class EmailQuestionnaire extends AppCompatActivity {
     private RecyclerView target_box;
     private RecyclerView target2;
     private QuestionAdapter adapter;
+    //private Integer weight_total;
+    //private Integer question_counter;
     private QuestionAdapter targ_adapter;
     private QuestionAdapter targ2_adapter;
     private RadioButton yes_btn;
@@ -99,7 +101,9 @@ public class EmailQuestionnaire extends AppCompatActivity {
         for(int i = 0; i < general_questions.size(); i++) {
 
             if(general_questions.get(i).getAnswer() == "yes") {
+                //weight_total += general_questions.get(i).getWeight();
                 Integer temp = i+1;
+                //question_counter += 1;
                 String tbl = temp.toString();
                 getTargetedQuestions(tbl);
             }
@@ -121,6 +125,8 @@ public class EmailQuestionnaire extends AppCompatActivity {
         //rec.putParcelableArrayListExtra("targeted2", targeted_2);
         rec.putParcelableArrayListExtra("general", general_questions);
         rec.putExtra("question_type", "email");
+        //rec.putExtra("weight_total", weight_total);
+        //rec.putExtra("question_counter", question_counter);
 
         startActivity(rec);
     }

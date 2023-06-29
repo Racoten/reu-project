@@ -49,6 +49,8 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
     private QuestionAdapter adapter;
     private QuestionAdapter targ1_adapter;
     private QuestionAdapter targ2_adapter;
+    //private Integer weight_total;
+    //private Integer question_counter;
 
     private Button next;
     private Button submit;
@@ -83,6 +85,9 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         //rec.putParcelableArrayListExtra("targeted2", targeted_2);
         rec.putParcelableArrayListExtra("general", general_questions);
         rec.putExtra("question_type", "browser");
+        //rec.putExtra("weight_total", weight_total);
+        //rec.putExtra("question_counter", question_counter);
+
         startActivity(rec);
     }
 
@@ -92,6 +97,8 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         for(int i = 0; i < general_questions.size(); i++) {
 
             if(Objects.equals(general_questions.get(i).getAnswer(), "yes")) {
+                //weight_total += general_questions.get(i).getWeight();
+                //question_counter += 1;
                 Integer temp = i+1;
                 String tbl = temp.toString();
                 getTargetedQuestions(tbl);

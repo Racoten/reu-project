@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +26,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-// TODO: all recommendations do show up, however sometimes they aren't added to the recyclerview's arraylist fast enough
+/*
+TODO: all recommendations do show up, however sometimes they aren't added to the recyclerview's arraylist fast enough
+    Figure out how to block UI until all recommendations appear.
+    When only 1 general question is selected, all recommendations show up in time, and count is updated correctly.
+    However, when both general questions are selected, not all of them show up.
+
+ */
 public class RecommendationsActivity extends AppCompatActivity {
     private ArrayList<Question> targeted1 = new ArrayList<>();
     private ArrayList<Question> targeted2 = new ArrayList<>();
@@ -36,6 +43,10 @@ public class RecommendationsActivity extends AppCompatActivity {
     private ArrayList<Recommendation> temp1 = new ArrayList<>();
     private ArrayList<Recommendation> temp2 = new ArrayList<>();
     private RecyclerView recs;
+    private TextView score;
+    private double weight_total = 0;
+    private double question_counter = 0;
+    private Double weight_average = 0.0;
     private RecommendationAdapter rec_adapter;
     private boolean showGeneral1 = false;
     private boolean showGeneral2 = false;
@@ -49,8 +60,11 @@ public class RecommendationsActivity extends AppCompatActivity {
         targeted1 = i.getParcelableArrayListExtra("targeted1");
         //targeted2 = i.getParcelableArrayListExtra("targeted2");
         String type = i.getStringExtra("question_type");
+        //weight_total = i.getIntExtra("weight_total", 0);
+        //question_counter = i.getIntExtra("question_counter", 0);
 
         recs = findViewById(R.id.recommendation_view);
+        score = findViewById(R.id.score);
         recs.setLayoutManager(new LinearLayoutManager(this));
         rec_adapter = new RecommendationAdapter(this, rec_all);
 
@@ -62,6 +76,7 @@ public class RecommendationsActivity extends AppCompatActivity {
 
 
             if (Objects.equals(general.get(0).getAnswer(), "yes")) {
+
                 getTargetedEmailRecommendations("1", temp1, targeted1);
             }
 
@@ -78,7 +93,13 @@ public class RecommendationsActivity extends AppCompatActivity {
                 getTargetedBrowserRecommendations("2", temp2, targeted1);
             }
         }
+        //setWeightAverage();
+        //score.setText(String.valueOf(weight_average));
 
+    }
+
+    public void setWeightAverage() {
+        weight_average = (double) ( weight_total / question_counter);
     }
 
     public void getGeneralEmailRecommendations() {
@@ -108,16 +129,20 @@ public class RecommendationsActivity extends AppCompatActivity {
                     for(int i = 0; i < gen_rec.length(); i++) {
 
                         if(Objects.equals(general.get(i).getAnswer(), "yes")) {
+                            JSONObject ro = gen_rec.getJSONObject(i);
+                            question_counter += 1;
+                            weight_total += general.get(i).getWeight();
                             //System.out.println(gen_rec.getString(i));
-                            rec_all.add(new Recommendation(gen_rec.getString(i)));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            setWeightAverage();
                         }
 
-
-
                     }
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            score.setText(String.format("%.1f", weight_average));
                             rec_adapter.notifyDataSetChanged();
                         }
                     });
@@ -159,15 +184,22 @@ public class RecommendationsActivity extends AppCompatActivity {
                     //System.out.println(t1_rec);
                     for (int i = 0; i < t1_rec.length(); i++) {
                         if(Objects.equals(comparelist.get(i).getAnswer(), "yes") && Objects.equals(comparelist.get(i).getTable(), Integer.valueOf(tablename))) {
-                            rec_all.add(new Recommendation(t1_rec.getString(i)));
+                            JSONObject ro = t1_rec.getJSONObject(i);
+                            weight_total += comparelist.get(i).getWeight();
+                            question_counter += 1;
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            setWeightAverage();
 
                         }
                     }
 
+                    //System.out.println(weight_average);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             //rec_all.addAll(tempreclist);
+                            //score.setText(String.valueOf(weight_average));
+                            score.setText(String.format("%.1f", weight_average));
                             rec_adapter.notifyDataSetChanged();
                         }
                     });
@@ -207,16 +239,22 @@ public class RecommendationsActivity extends AppCompatActivity {
                     for(int i = 0; i < gen_rec.length(); i++) {
 
                         if(Objects.equals(general.get(i).getAnswer(), "yes")) {
+                            JSONObject ro  = gen_rec.getJSONObject(i);
+
+                            question_counter += 1;
+                            weight_total += general.get(i).getWeight();
                             //System.out.println(gen_rec.getString(i));
-                            rec_all.add(new Recommendation(gen_rec.getString(i)));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            setWeightAverage();
                         }
 
-
-
                     }
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            score.setText(String.format("%.1f", weight_average));
+
                             rec_adapter.notifyDataSetChanged();
                         }
                     });
@@ -257,16 +295,23 @@ public class RecommendationsActivity extends AppCompatActivity {
                     JSONArray t1_rec = obj.getJSONArray("recommendations");
                     //System.out.println(t1_rec);
                     for (int i = 0; i < t1_rec.length(); i++) {
-                        if(Objects.equals(comparelist.get(i).getAnswer(), "yes")) {
-                            rec_all.add(new Recommendation(t1_rec.getString(i)));
+                        if(Objects.equals(comparelist.get(i).getAnswer(), "yes") && Objects.equals(comparelist.get(i).getTable(), Integer.valueOf(tablename))) {
+                            JSONObject ro = t1_rec.getJSONObject(i);
+                            weight_total += comparelist.get(i).getWeight();
+                            question_counter += 1;
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            setWeightAverage();
 
                         }
                     }
+
+                    //System.out.println("Weight: "+weight_total+" Count: "+question_counter);
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             //rec_all.addAll(tempreclist);
+                            score.setText(String.format("%.1f", weight_average));
                             rec_adapter.notifyDataSetChanged();
                         }
                     });
