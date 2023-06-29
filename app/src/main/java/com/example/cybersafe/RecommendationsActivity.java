@@ -48,8 +48,6 @@ public class RecommendationsActivity extends AppCompatActivity {
     private double question_counter = 0;
     private Double weight_average = 0.0;
     private RecommendationAdapter rec_adapter;
-    private boolean showGeneral1 = false;
-    private boolean showGeneral2 = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,26 +68,30 @@ public class RecommendationsActivity extends AppCompatActivity {
 
         recs.setAdapter(rec_adapter);
         //rec_adapter.notifyDataSetChanged();
-
+        //question_counter = targeted1.size();
         if(Objects.equals(type, "email")) {
             getGeneralEmailRecommendations();
 
 
             if (Objects.equals(general.get(0).getAnswer(), "yes")) {
-
+                question_counter += 1;
                 getTargetedEmailRecommendations("1", temp1, targeted1);
             }
 
             if (Objects.equals(general.get(1).getAnswer(), "yes")) {
+                question_counter += 1;
                 getTargetedEmailRecommendations("2", temp2, targeted1);
             }
         } else if(Objects.equals(type, "browser")) {
             getGeneralBrowserRecommendations();
 
             if(Objects.equals(general.get(0).getAnswer(), "yes")) {
+                question_counter += 1;
+
                 getTargetedBrowserRecommendations("1", temp1, targeted1);
             }
             if(Objects.equals(general.get(1).getAnswer(), "yes")) {
+                question_counter += 1;
                 getTargetedBrowserRecommendations("2", temp2, targeted1);
             }
         }
@@ -130,7 +132,7 @@ public class RecommendationsActivity extends AppCompatActivity {
 
                         if(Objects.equals(general.get(i).getAnswer(), "yes")) {
                             JSONObject ro = gen_rec.getJSONObject(i);
-                            question_counter += 1;
+                            //question_counter += 1;
                             weight_total += general.get(i).getWeight();
                             //System.out.println(gen_rec.getString(i));
                             rec_all.add(new Recommendation(ro.getString("RecommendationText")));
@@ -138,7 +140,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                         }
 
                     }
-
+                    System.out.println("Weight: "+weight_average+" Count: "+question_counter);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -186,13 +188,15 @@ public class RecommendationsActivity extends AppCompatActivity {
                         if(Objects.equals(comparelist.get(i).getAnswer(), "yes") && Objects.equals(comparelist.get(i).getTable(), Integer.valueOf(tablename))) {
                             JSONObject ro = t1_rec.getJSONObject(i);
                             weight_total += comparelist.get(i).getWeight();
-                            question_counter += 1;
+
                             rec_all.add(new Recommendation(ro.getString("RecommendationText")));
                             setWeightAverage();
 
                         }
+                        question_counter += 1;
                     }
 
+                    System.out.println("Weight: "+weight_average+" Count: "+question_counter);
                     //System.out.println(weight_average);
                     runOnUiThread(new Runnable() {
                         @Override
@@ -249,7 +253,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                         }
 
                     }
-
+                    System.out.println("Weight: "+weight_average+" Count: "+question_counter);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -298,13 +302,14 @@ public class RecommendationsActivity extends AppCompatActivity {
                         if(Objects.equals(comparelist.get(i).getAnswer(), "yes") && Objects.equals(comparelist.get(i).getTable(), Integer.valueOf(tablename))) {
                             JSONObject ro = t1_rec.getJSONObject(i);
                             weight_total += comparelist.get(i).getWeight();
-                            question_counter += 1;
+                            //question_counter += 1;
                             rec_all.add(new Recommendation(ro.getString("RecommendationText")));
                             setWeightAverage();
 
                         }
+                        question_counter += 1;
                     }
-
+                    System.out.println("Weight: "+weight_average+" Count: "+question_counter);
                     //System.out.println("Weight: "+weight_total+" Count: "+question_counter);
 
                     runOnUiThread(new Runnable() {
