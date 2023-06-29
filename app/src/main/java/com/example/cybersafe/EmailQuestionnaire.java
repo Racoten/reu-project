@@ -37,13 +37,6 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-/*
-
-    Sometimes when both general questions are selected, not all the targeted questions show up,
-    this could be due to the arraylist add statements being in the async portion of the methods.
-
-
- */
 public class EmailQuestionnaire extends AppCompatActivity {
     ArrayList<Question> general_questions = new ArrayList<>();
     ArrayList<Question> targeted_1 = new ArrayList<>();
@@ -72,26 +65,32 @@ public class EmailQuestionnaire extends AppCompatActivity {
 
         box = findViewById(R.id.q_box);
         target_box = findViewById(R.id.target_box);
-        target2 = findViewById(R.id.target2);
 
         next = findViewById(R.id.next_question);
         submit = findViewById(R.id.submit_btn);
 
         box.setLayoutManager(new LinearLayoutManager(this));
         target_box.setLayoutManager(new LinearLayoutManager(this));
-        target2.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new QuestionAdapter(this, general_questions);
         targ_adapter = new QuestionAdapter(this, targeted_1);
-        targ2_adapter = new QuestionAdapter(this, targeted_2);
 
         box.setAdapter(adapter);
+        box.setVisibility(View.VISIBLE);
         target_box.setAdapter(targ_adapter);
-        target2.setAdapter(targ2_adapter);
         getEmailQuestions();
 
         // notifyDataSetChanged has to run inside of ui thread runnable, inside getEmailQuestions()
         //adapter.notifyDataSetChanged();
+    }
+
+    public boolean questionExists(String text, ArrayList<Question> list) {
+        for(int i = 0; i < list.size(); i++) {
+            if(Objects.equals(list.get(i).getQuestionText(), text)) {
+                return  true;
+            }
+        }
+        return false;
     }
 
     public void checkQuestions(View view) {
@@ -111,7 +110,6 @@ public class EmailQuestionnaire extends AppCompatActivity {
         // show submit button
         submit.setVisibility(View.VISIBLE);
         target_box.setVisibility(View.VISIBLE);
-        target2.setVisibility(View.VISIBLE);
     }
 
     public void startRecommendations(View view) {
@@ -120,7 +118,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
 
         Intent rec = new Intent(this, RecommendationsActivity.class);
         rec.putParcelableArrayListExtra("targeted1", targeted_1);
-        rec.putParcelableArrayListExtra("targeted2", targeted_2);
+        //rec.putParcelableArrayListExtra("targeted2", targeted_2);
         rec.putParcelableArrayListExtra("general", general_questions);
         rec.putExtra("question_type", "email");
 
@@ -156,7 +154,9 @@ public class EmailQuestionnaire extends AppCompatActivity {
                     JSONArray gq = obj.getJSONArray("questions");
                     for(int i = 0; i < gq.length(); i++) {
                         // default answer to no
-                        general_questions.add(new Question(gq.getString(i), "no"));
+                        JSONObject q = gq.getJSONObject(i);
+                        // zero means general questions
+                        general_questions.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), 0));
                         //System.out.println(general_questions.get(i).getQuestionText());
                     }
 
@@ -204,11 +204,18 @@ public class EmailQuestionnaire extends AppCompatActivity {
                     //targeted1 = new Question[t1.length()];
                    for (int i = 0; i < t.length(); i++) {
                        //targeted1[i] = new Question(t1.getString(i), "");
-
+                        JSONObject q = t.getJSONObject(i);
+                        // TODO: delete if statements when not needed
                        if(Objects.equals(targetedtable, "1")) {
-                           targeted_1.add(new Question(t.getString(i), "no"));
+                           if(!questionExists(q.getString("question_text"),  targeted_1)) {
+                               targeted_1.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
+                           }
+                           //targeted_1.add(new Question(t.getString(i), "no"));
                        } else if(Objects.equals(targetedtable, "2")) {
-                           targeted_2.add(new Question(t.getString(i), "no"));
+                           if(!questionExists(q.getString("question_text"),  targeted_1)) {
+                               targeted_1.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
+                           }
+                           //targeted_2.add(new Question(t.getString(i), "no"));
                        }
                     }
 
@@ -216,7 +223,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
                        @Override
                         public void run() {
                             targ_adapter.notifyDataSetChanged();
-                            targ2_adapter.notifyDataSetChanged();
+                            //targ2_adapter.notifyDataSetChanged();
                        }
                    });
 
