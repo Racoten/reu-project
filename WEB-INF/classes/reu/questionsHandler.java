@@ -6,11 +6,13 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.util.*;
+import org.json.*;
 
 public class questionsHandler extends HttpServlet {
     public MySQLConnector myDBConn;
 
     ArrayList<String> questions = new ArrayList<String>();
+    ArrayList<Question> qlist = new  ArrayList<Question>();
     public String answer;
 
 	public questionsHandler(){
@@ -29,67 +31,71 @@ public class questionsHandler extends HttpServlet {
 		System.out.println("Receive request with parameter: " + param);
 
         if(param.equals("emailgeneral")) {
-            ArrayList<String> questions = getGeneralQuestions("emailquestions");
-            String msg = "{\"questions\": [";
-
+            ArrayList<Question> questions = getGeneralQuestions("cybersafe.EmailQuestions");
+            JSONObject root_obj = new JSONObject();
+            JSONArray resp_array = new JSONArray();
             for(int i = 0; i < questions.size(); i++) {
-                msg += "\"" + questions.get(i) + "\"";
-                if(i < questions.size()-1) {
-                    msg += ",";
-                }
+                JSONObject obj = new JSONObject();
+                obj.put("question_text", questions.get(i).getQuestion_text());
+                obj.put("id", questions.get(i).getId());
+                obj.put("weight", questions.get(i).getWeight());
+                resp_array.put(obj);
             }
-
-            msg += "]}";
+            root_obj.put("questions", resp_array);
+            //System.out.println(root_obj.toString());
             PrintWriter out = response.getWriter();
-            out.println(msg);
+            out.println(root_obj.toString());
         }
 
         else if(param.equals("browsersecuritygeneral")) {
-            ArrayList<String> questions = getGeneralQuestions("browsersecurityquestions");
-            String msg = "{\"questions\": [";
-
+            ArrayList<Question> questions = getGeneralQuestions("BrowserSecurityQuestions");
+            JSONObject root_obj = new JSONObject();
+            JSONArray resp_array = new JSONArray();
             for(int i = 0; i < questions.size(); i++) {
-                msg += "\"" + questions.get(i) + "\"";
-                if(i < questions.size()-1) {
-                    msg += ",";
-                }
+                JSONObject obj = new JSONObject();
+                obj.put("question_text", questions.get(i).getQuestion_text());
+                obj.put("id", questions.get(i).getId());
+                obj.put("weight", questions.get(i).getWeight());
+                resp_array.put(obj);
             }
+            root_obj.put("questions", resp_array);
 
-            msg += "]}";
             PrintWriter out = response.getWriter();
-            out.println(msg);
+            out.println(root_obj.toString());
         } 
 
         else if(param.equals("browsertargeted")) {
-            ArrayList<String> questions = getTargetedQuestions("browsersecurityquestionstargeted", targetedTable);
-            String msg = "{\"questions\": [";
-
+            ArrayList<Question> questions = getTargetedQuestions("BrowserSecurityQuestionsTargeted", targetedTable);
+            JSONObject root_obj = new JSONObject();
+            JSONArray resp_array = new JSONArray();
             for(int i = 0; i < questions.size(); i++) {
-                msg += "\"" + questions.get(i) + "\"";
-                if(i < questions.size()-1) {
-                    msg += ",";
-                }
+                JSONObject obj = new JSONObject();
+                obj.put("question_text", questions.get(i).getQuestion_text());
+                obj.put("id", questions.get(i).getId());
+                obj.put("weight", questions.get(i).getWeight());
+                resp_array.put(obj);
             }
+            root_obj.put("questions", resp_array);
 
-            msg += "]}";
             PrintWriter out = response.getWriter();
-            out.println(msg);
+            out.println(root_obj.toString());
         } 
 
-        else if(param.equals("emailtargeted")) {
-            ArrayList<String> questions = getTargetedQuestions("emailquestionstargeted", targetedTable);
-            String msg = "{\"questions\": [";
-
+        else if(param.equals("emailtargeted")) { 
+            ArrayList<Question> questions = getTargetedQuestions("BrowserSecurityQuestionsTargeted", targetedTable);
+            JSONObject root_obj = new JSONObject();
+            JSONArray resp_array = new JSONArray();
             for(int i = 0; i < questions.size(); i++) {
-                msg += "\"" + questions.get(i) + "\"";
-                if(i < questions.size()-1) {
-                    msg += ",";
-                }
+                JSONObject obj = new JSONObject();
+                obj.put("question_text", questions.get(i).getQuestion_text());
+                obj.put("id", questions.get(i).getId());
+                obj.put("weight", questions.get(i).getWeight());
+                resp_array.put(obj);
             }
+            root_obj.put("questions", resp_array);
 
-            msg += "]}";
             PrintWriter out = response.getWriter();
-            out.println(msg);
+            out.println(root_obj.toString());
         }
 
 
@@ -105,43 +111,43 @@ public class questionsHandler extends HttpServlet {
         }
 	 }
 
-    public ArrayList<String> getGeneralQuestions(String type) {
-        String query = "SELECT QuestionText FROM "+type+";";
+    public ArrayList<Question> getGeneralQuestions(String type) {
+        String query = "SELECT * FROM "+type+";";
         ResultSet querySend = myDBConn.doSelect(query);
         
-        if (!questions.isEmpty()) {
-            questions.clear();
+        if (!qlist.isEmpty()) {
+            qlist.clear();
         }
 
         try {
             while (querySend.next()) {
-                questions.add(querySend.getString("QuestionText"));
+                qlist.add(new Question(querySend.getString("QuestionText"), querySend.getInt("QuestionID"), querySend.getInt("Weight")));
                 System.out.println("Question being added: " + querySend.getString("QuestionText"));
             }
         } catch (Exception e) {
             System.out.println(e);
         } finally { 
-            return questions;
+            return qlist;
         }
     }
 
-    public ArrayList<String> getTargetedQuestions(String type, String table) {
-        String query = "SELECT QuestionText FROM " + type + table + ";";
+    public ArrayList<Question> getTargetedQuestions(String type, String table) {
+        String query = "SELECT * FROM " + type + table + ";";
         ResultSet querySend = myDBConn.doSelect(query);
         
-        if (!questions.isEmpty()) {
-            questions.clear();
+        if (!qlist.isEmpty()) {
+            qlist.clear();
         }
 
         try {
             while (querySend.next()) {
-                questions.add(querySend.getString("QuestionText"));
+                qlist.add(new Question(querySend.getString("QuestionText"), querySend.getInt("QuestionID"), querySend.getInt("Weight")));
                 System.out.println("Question being added: " + querySend.getString("QuestionText"));
             }
         } catch (Exception e) {
             System.out.println(e);
         } finally { 
-            return questions;
+            return qlist;
         }
     }
 }
