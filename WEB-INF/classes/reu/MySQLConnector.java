@@ -119,6 +119,7 @@ public class MySQLConnector{
 		
 		//Create the selection statement 
 		String selectionStatement = query;
+		System.out.println(query);
 		
 		try{
 			//perform the query and catch results in the result object

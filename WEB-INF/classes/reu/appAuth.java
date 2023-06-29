@@ -59,12 +59,15 @@ public class appAuth extends HttpServlet {
      
 		//Retreive the http request parameters
 		String param = request.getParameter("param");
+		String username = request.getParameter("username");
+
+		
 
 		System.out.println("Receive request with parameter: " + param);
 
 		if (param.equals("login")) {
 			System.out.println("Param is login");
-			String username = request.getParameter("username");
+			
 			String password = request.getParameter("password");
 
 			String hashingVal = hashingSha256(username + password);
@@ -79,7 +82,7 @@ public class appAuth extends HttpServlet {
 
 				// Set response content type
 				response.setContentType("text/html");
-				String msg = doAuthentication(username);
+				String msg = doAuthentication(username, request, response);
 
 				// Actual logic goes here.
 				PrintWriter out = response.getWriter();
@@ -95,8 +98,6 @@ public class appAuth extends HttpServlet {
 		}
 		else if (param.equals("register")) {
 			System.out.println("Param is register");
-
-			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			String email = request.getParameter("email");
 			String msg = doRegister(username, email, password);
@@ -113,13 +114,14 @@ public class appAuth extends HttpServlet {
 	/****
 		This method perform a dummy authentication process
 	***/
-	public String doAuthentication(String username) {
+	public String doAuthentication(String username, HttpServletRequest request, HttpServletResponse response) {
 		String msg = "";
 		String fields = "*";
-		String tables = "Users";
+		String tables = "users";
 		String whereClause = "UserName = '" + username + "';";
 
 		sessionHandler = new SessionHandler(username);
+
 
 		String query = "SELECT " + fields + " FROM " + tables + " WHERE " + whereClause;
 		System.out.println(query);
@@ -127,7 +129,7 @@ public class appAuth extends HttpServlet {
 		
 		try {
 			ResultSet userInfo = myDBConn.doSelect(query);
-		
+			
 			while (userInfo.next()) {
 				String email = userInfo.getString("email");
 		
@@ -152,7 +154,7 @@ public class appAuth extends HttpServlet {
 
 		sessionHandler = new SessionHandler(username);
 
-		table = "Users";
+		table = "users";
 		values = "'" + username + "', '" + email + "', '" + hashingVal + "'";
 
 		String query = "INSERT INTO " + table + " (UserName, Email, PasswordHash) VALUES (" + values + ");";

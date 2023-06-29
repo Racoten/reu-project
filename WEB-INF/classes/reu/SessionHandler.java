@@ -31,6 +31,10 @@ public class SessionHandler extends HttpServlet{
         myDBConn.doInsert(query);
     }
 
+    public String getToken() {
+        return this.token;
+    }
+
     private String hashingSha256(String plainText)
 	{
 			String sha256hex = org.apache.commons.codec.digest.DigestUtils.sha256Hex(plainText); 
