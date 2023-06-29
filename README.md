@@ -13,3 +13,6 @@
 ## Connection settings (linux)
 - database url: `jdbc:mysql://localhost:3306/cybersafe?serverTimezone=UTC`  
 - make sure table names are capitalized
+
+## JSON library
+- https://search.maven.org/remotecontent?filepath=org/json/json/20230618/json-20230618.jar
