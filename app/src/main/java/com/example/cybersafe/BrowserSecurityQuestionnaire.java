@@ -59,22 +59,18 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         setContentView(R.layout.activity_browser_security_questionnaire);
         question_box = findViewById(R.id.browser_question_general);
         target1_box = findViewById(R.id.browser_target_1);
-        target2_box = findViewById(R.id.browser_target_2);
 
         next = findViewById(R.id.next);
         submit = findViewById(R.id.browser_submit);
 
         question_box.setLayoutManager(new LinearLayoutManager(this));
         target1_box.setLayoutManager(new LinearLayoutManager(this));
-        target2_box.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new QuestionAdapter(this, general_questions);
         targ1_adapter = new QuestionAdapter(this, targeted_1);
-        targ2_adapter = new QuestionAdapter(this, targeted_2);
 
         question_box.setAdapter(adapter);
         target1_box.setAdapter(targ1_adapter);
-        target2_box.setAdapter(targ2_adapter);
         getBrowserGeneralQuestions();
     }
 
@@ -84,7 +80,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
 
         Intent rec = new Intent(this, RecommendationsActivity.class);
         rec.putParcelableArrayListExtra("targeted1", targeted_1);
-        rec.putParcelableArrayListExtra("targeted2", targeted_2);
+        //rec.putParcelableArrayListExtra("targeted2", targeted_2);
         rec.putParcelableArrayListExtra("general", general_questions);
         rec.putExtra("question_type", "browser");
         startActivity(rec);
@@ -107,7 +103,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         // show submit button
         submit.setVisibility(View.VISIBLE);
         target1_box.setVisibility(View.VISIBLE);
-        target2_box.setVisibility(View.VISIBLE);
+
     }
 
     public void getBrowserGeneralQuestions() {
@@ -140,7 +136,10 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
                     JSONArray array = resp_string.getJSONArray("questions");
                     for(int i = 0; i < array.length(); i++) {
                         // default answer to no
-                        general_questions.add(new Question(array.getString(i), "no"));
+                        JSONObject q = array.getJSONObject(i);
+                        // zero means general questions
+                        general_questions.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), 0));
+
                         //System.out.println(general_questions.get(i).getQuestionText());
                     }
 
@@ -188,11 +187,15 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
                     //targeted1 = new Question[t1.length()];
                     for (int i = 0; i < t.length(); i++) {
                         //targeted1[i] = new Question(t1.getString(i), "");
+                        JSONObject q = t.getJSONObject(i);
 
                         if(Objects.equals(targetedtable, "1")) {
-                            targeted_1.add(new Question(t.getString(i), "no"));
+                            targeted_1.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
+                            //targeted_1.add(new Question(t.getString(i), "no"));
                         } else if(Objects.equals(targetedtable, "2")) {
-                            targeted_2.add(new Question(t.getString(i), "no"));
+                            targeted_1.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
+
+                            //targeted_2.add(new Question(t.getString(i), "no"));
                         }
                     }
 
@@ -200,7 +203,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
                         @Override
                         public void run() {
                             targ1_adapter.notifyDataSetChanged();
-                            targ2_adapter.notifyDataSetChanged();
+                            //targ2_adapter.notifyDataSetChanged();
                         }
                     });
 

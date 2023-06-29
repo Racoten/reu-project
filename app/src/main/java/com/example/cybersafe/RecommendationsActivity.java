@@ -25,9 +25,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/*
-TODO: add String parcel so it knows whether to fetch email or browser recommendations
- */
+// TODO: all recommendations do show up, however sometimes they aren't added to the recyclerview's arraylist fast enough
 public class RecommendationsActivity extends AppCompatActivity {
     private ArrayList<Question> targeted1 = new ArrayList<>();
     private ArrayList<Question> targeted2 = new ArrayList<>();
@@ -49,7 +47,7 @@ public class RecommendationsActivity extends AppCompatActivity {
         Intent i = getIntent();
         general = i.getParcelableArrayListExtra("general");
         targeted1 = i.getParcelableArrayListExtra("targeted1");
-        targeted2 = i.getParcelableArrayListExtra("targeted2");
+        //targeted2 = i.getParcelableArrayListExtra("targeted2");
         String type = i.getStringExtra("question_type");
 
         recs = findViewById(R.id.recommendation_view);
@@ -68,7 +66,7 @@ public class RecommendationsActivity extends AppCompatActivity {
             }
 
             if (Objects.equals(general.get(1).getAnswer(), "yes")) {
-                getTargetedEmailRecommendations("2", temp2, targeted2);
+                getTargetedEmailRecommendations("2", temp2, targeted1);
             }
         } else if(Objects.equals(type, "browser")) {
             getGeneralBrowserRecommendations();
@@ -77,7 +75,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                 getTargetedBrowserRecommendations("1", temp1, targeted1);
             }
             if(Objects.equals(general.get(1).getAnswer(), "yes")) {
-                getTargetedBrowserRecommendations("2", temp2, targeted2);
+                getTargetedBrowserRecommendations("2", temp2, targeted1);
             }
         }
 
@@ -160,8 +158,8 @@ public class RecommendationsActivity extends AppCompatActivity {
                     JSONArray t1_rec = obj.getJSONArray("recommendations");
                     //System.out.println(t1_rec);
                     for (int i = 0; i < t1_rec.length(); i++) {
-                        if(Objects.equals(comparelist.get(i).getAnswer(), "yes")) {
-                            tempreclist.add(new Recommendation(t1_rec.getString(i)));
+                        if(Objects.equals(comparelist.get(i).getAnswer(), "yes") && Objects.equals(comparelist.get(i).getTable(), Integer.valueOf(tablename))) {
+                            rec_all.add(new Recommendation(t1_rec.getString(i)));
 
                         }
                     }
@@ -169,7 +167,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            rec_all.addAll(tempreclist);
+                            //rec_all.addAll(tempreclist);
                             rec_adapter.notifyDataSetChanged();
                         }
                     });
@@ -260,7 +258,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                     //System.out.println(t1_rec);
                     for (int i = 0; i < t1_rec.length(); i++) {
                         if(Objects.equals(comparelist.get(i).getAnswer(), "yes")) {
-                            tempreclist.add(new Recommendation(t1_rec.getString(i)));
+                            rec_all.add(new Recommendation(t1_rec.getString(i)));
 
                         }
                     }
@@ -268,7 +266,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            rec_all.addAll(tempreclist);
+                            //rec_all.addAll(tempreclist);
                             rec_adapter.notifyDataSetChanged();
                         }
                     });
