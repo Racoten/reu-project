@@ -31,73 +31,84 @@ public class questionsHandler extends HttpServlet {
 		System.out.println("Receive request with parameter: " + param);
 
         if(param.equals("emailgeneral")) {
-            ArrayList<Question> questions = getGeneralQuestions("EmailQuestions");
-            JSONObject root_obj = new JSONObject();
-            JSONArray resp_array = new JSONArray();
-            for(int i = 0; i < questions.size(); i++) {
-                JSONObject obj = new JSONObject();
-                obj.put("question_text", questions.get(i).getQuestion_text());
-                obj.put("id", questions.get(i).getId());
-                obj.put("weight", questions.get(i).getWeight());
-                resp_array.put(obj);
+            try {
+                ArrayList<Question> questions = getGeneralQuestions("EmailQuestions");
+                JSONObject root_obj = new JSONObject();
+                JSONArray resp_array = new JSONArray();
+                for(int i = 0; i < questions.size(); i++) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("question_text", questions.get(i).getQuestion_text());
+                    obj.put("id", questions.get(i).getId());
+                    obj.put("weight", questions.get(i).getWeight());
+                    resp_array.put(obj);
+                }
+                root_obj.put("questions", resp_array);
+                PrintWriter out = response.getWriter();
+                out.println(root_obj.toString());
+            } catch (JSONException e) {
+                System.out.println("Error: " + e.getMessage());
             }
-            root_obj.put("questions", resp_array);
-            //System.out.println(root_obj.toString());
-            PrintWriter out = response.getWriter();
-            out.println(root_obj.toString());
-        }
+        } 
 
         else if(param.equals("browsersecuritygeneral")) {
-            ArrayList<Question> questions = getGeneralQuestions("BrowserSecurityQuestions");
-            JSONObject root_obj = new JSONObject();
-            JSONArray resp_array = new JSONArray();
-            for(int i = 0; i < questions.size(); i++) {
-                JSONObject obj = new JSONObject();
-                obj.put("question_text", questions.get(i).getQuestion_text());
-                obj.put("id", questions.get(i).getId());
-                obj.put("weight", questions.get(i).getWeight());
-                resp_array.put(obj);
+            try {
+                ArrayList<Question> questions = getGeneralQuestions("BrowserSecurityQuestions");
+                JSONObject root_obj = new JSONObject();
+                JSONArray resp_array = new JSONArray();
+                for(int i = 0; i < questions.size(); i++) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("question_text", questions.get(i).getQuestion_text());
+                    obj.put("id", questions.get(i).getId());
+                    obj.put("weight", questions.get(i).getWeight());
+                    resp_array.put(obj);
+                }
+                root_obj.put("questions", resp_array);
+                PrintWriter out = response.getWriter();
+                out.println(root_obj.toString());
+            } catch (JSONException e) {
+                System.out.println("Error: " + e.getMessage());
             }
-            root_obj.put("questions", resp_array);
-
-            PrintWriter out = response.getWriter();
-            out.println(root_obj.toString());
         } 
 
         else if(param.equals("browsertargeted")) {
-            ArrayList<Question> questions = getTargetedQuestions("BrowserSecurityQuestionsTargeted", targetedTable);
-            JSONObject root_obj = new JSONObject();
-            JSONArray resp_array = new JSONArray();
-            for(int i = 0; i < questions.size(); i++) {
-                JSONObject obj = new JSONObject();
-                obj.put("question_text", questions.get(i).getQuestion_text());
-                obj.put("id", questions.get(i).getId());
-                obj.put("weight", questions.get(i).getWeight());
-                resp_array.put(obj);
+            try {
+                ArrayList<Question> questions = getTargetedQuestions("BrowserSecurityQuestionsTargeted", targetedTable);
+                JSONObject root_obj = new JSONObject();
+                JSONArray resp_array = new JSONArray();
+                for(int i = 0; i < questions.size(); i++) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("question_text", questions.get(i).getQuestion_text());
+                    obj.put("id", questions.get(i).getId());
+                    obj.put("weight", questions.get(i).getWeight());
+                    resp_array.put(obj);
+                }
+                root_obj.put("questions", resp_array);
+                PrintWriter out = response.getWriter();
+                out.println(root_obj.toString());
+            } catch (JSONException e) {
+                System.out.println("Error: " + e.getMessage());
             }
-            root_obj.put("questions", resp_array);
-
-            PrintWriter out = response.getWriter();
-            out.println(root_obj.toString());
         } 
 
         else if(param.equals("emailtargeted")) { 
-            ArrayList<Question> questions = getTargetedQuestions("EmailQuestionsTargeted", targetedTable);
-            JSONObject root_obj = new JSONObject();
-            JSONArray resp_array = new JSONArray();
-            for(int i = 0; i < questions.size(); i++) {
-                JSONObject obj = new JSONObject();
-                obj.put("question_text", questions.get(i).getQuestion_text());
-                obj.put("id", questions.get(i).getId());
-                obj.put("weight", questions.get(i).getWeight());
-                resp_array.put(obj);
+            try {
+                ArrayList<Question> questions = getTargetedQuestions("EmailQuestionsTargeted", targetedTable);
+                JSONObject root_obj = new JSONObject();
+                JSONArray resp_array = new JSONArray();
+                for(int i = 0; i < questions.size(); i++) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("question_text", questions.get(i).getQuestion_text());
+                    obj.put("id", questions.get(i).getId());
+                    obj.put("weight", questions.get(i).getWeight());
+                    resp_array.put(obj);
+                }
+                root_obj.put("questions", resp_array);
+                PrintWriter out = response.getWriter();
+                out.println(root_obj.toString());
+            } catch (JSONException e) {
+                System.out.println("Error: " + e.getMessage());
             }
-            root_obj.put("questions", resp_array);
-
-            PrintWriter out = response.getWriter();
-            out.println(root_obj.toString());
         }
-
 
         else {
             // Set response content type
