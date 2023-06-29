@@ -13,6 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
-*.xml
 .idea/.name
 *.class
+.idea/*.xml
