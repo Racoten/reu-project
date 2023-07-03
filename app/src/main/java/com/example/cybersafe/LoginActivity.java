@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -46,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
         EditText username = (EditText) findViewById(R.id.username_input);
         EditText password = (EditText) findViewById(R.id.password_input);
 
-        TextView error_box = (TextView) findViewById(R.id.login_error_box);
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/appAuth";
@@ -85,7 +85,8 @@ public class LoginActivity extends AppCompatActivity {
                     Intent homeIntent = new Intent(LoginActivity.this, Homepage.class);
                     startActivity(homeIntent);
                 } else {
-                    error_box.setText("Error: failed to login");
+                    runOnUiThread(() -> Toast.makeText(view.getContext(), "Failed to log in", Toast.LENGTH_LONG).show());
+
                 }
             }
         });

@@ -1,6 +1,6 @@
 package com.example.cybersafe;
 
-import static org.apache.http.conn.ssl.SSLSocketFactory.SSL;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,13 +21,7 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Objects;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import java.util.concurrent.CountDownLatch;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -39,16 +33,13 @@ import okhttp3.Response;
 
 public class BrowserSecurityQuestionnaire extends AppCompatActivity {
     ArrayList<Question> general_questions = new ArrayList<>();
-    ArrayList<Question> targeted_1 = new ArrayList<>();
-    ArrayList<Question> targeted_2 = new ArrayList<>();
+    ArrayList<Question> targeted_questions = new ArrayList<>();
     private RecyclerView question_box;
 
     private RecyclerView target1_box;
-    private RecyclerView target2_box;
 
     private QuestionAdapter adapter;
     private QuestionAdapter targ1_adapter;
-    private QuestionAdapter targ2_adapter;
     //private Integer weight_total;
     //private Integer question_counter;
 
@@ -69,7 +60,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         target1_box.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new QuestionAdapter(this, general_questions);
-        targ1_adapter = new QuestionAdapter(this, targeted_1);
+        targ1_adapter = new QuestionAdapter(this, targeted_questions);
 
         question_box.setAdapter(adapter);
         target1_box.setAdapter(targ1_adapter);
@@ -81,8 +72,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         //System.out.println(targeted_all.size());
 
         Intent rec = new Intent(this, RecommendationsActivity.class);
-        rec.putParcelableArrayListExtra("targeted1", targeted_1);
-        //rec.putParcelableArrayListExtra("targeted2", targeted_2);
+        rec.putParcelableArrayListExtra("targeted1", targeted_questions);
         rec.putParcelableArrayListExtra("general", general_questions);
         rec.putExtra("question_type", "browser");
         //rec.putExtra("weight_total", weight_total);
@@ -119,6 +109,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         //String url = "https://10.0.2.2:8443/questionsHandler?param=browsersecuritygeneral";
         String url = "https://192.168.0.32:8443/questionsHandler?param=browsersecuritygeneral";
 
+        CountDownLatch latch = new CountDownLatch(1);
 
 
         Request req = new Request.Builder()
@@ -131,6 +122,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
+                latch.countDown();
 
             }
 
@@ -149,20 +141,30 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
 
                         //System.out.println(general_questions.get(i).getQuestionText());
                     }
+                    latch.countDown();
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
 
             }
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        adapter.notifyDataSetChanged();
 
+    }
+
+    public boolean questionExists(String text, ArrayList<Question> list) {
+        for(int i = 0; i < list.size(); i++) {
+            if(Objects.equals(list.get(i).getQuestionText(), text)) {
+                return  true;
+            }
+        }
+        return false;
     }
 
     public void getTargetedQuestions(String targetedtable) {
@@ -170,6 +172,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
         String url1 = "https://192.168.0.32:8443/questionsHandler?param=browsertargeted&targetedtable=" + targetedtable;
 
+        CountDownLatch latch = new CountDownLatch(1);
 
 
         Request req = new Request.Builder()
@@ -180,6 +183,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
+                latch.countDown();
 
             }
 
@@ -195,30 +199,23 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
                     for (int i = 0; i < t.length(); i++) {
                         //targeted1[i] = new Question(t1.getString(i), "");
                         JSONObject q = t.getJSONObject(i);
-
-                        if(Objects.equals(targetedtable, "1")) {
-                            targeted_1.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
-                            //targeted_1.add(new Question(t.getString(i), "no"));
-                        } else if(Objects.equals(targetedtable, "2")) {
-                            targeted_1.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
-
-                            //targeted_2.add(new Question(t.getString(i), "no"));
+                        if(!questionExists(q.getString("question_text"), targeted_questions)) {
+                            targeted_questions.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
                         }
+
                     }
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            targ1_adapter.notifyDataSetChanged();
-                            //targ2_adapter.notifyDataSetChanged();
-                        }
-                    });
-
+                    latch.countDown();
 
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        targ1_adapter.notifyDataSetChanged();
     }
 }

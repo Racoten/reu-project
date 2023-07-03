@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -45,6 +46,14 @@ public class SignupActivity extends AppCompatActivity {
         String url = "https://192.168.0.32:8443/appAuth";
 
         //String params = "param=login&username=test&password=test";
+        String user = username.getText().toString();
+        String pass = password.getText().toString();
+        String e = email.getText().toString();
+
+        if(user.isEmpty() || pass.isEmpty() || e.isEmpty()) {
+            Toast.makeText(view.getContext(), "Couldn't create account: empty fields", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         RequestBody body = new FormBody.Builder()
                 .add("param", "register")
@@ -67,7 +76,11 @@ public class SignupActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                System.out.println(response.body().string());
+                //System.out.println(response.body().string());
+                String resp = response.body().string();
+                if(resp.equals("no")) {
+                    runOnUiThread(() -> Toast.makeText(view.getContext(), "failed to create account", Toast.LENGTH_LONG).show());
+                }
             }
         });
     }

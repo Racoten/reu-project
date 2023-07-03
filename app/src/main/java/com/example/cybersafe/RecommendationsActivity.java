@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,7 +36,6 @@ TODO: all recommendations do show up, however sometimes they aren't added to the
  */
 public class RecommendationsActivity extends AppCompatActivity {
     private ArrayList<Question> targeted1 = new ArrayList<>();
-    private ArrayList<Question> targeted2 = new ArrayList<>();
 
 
     private ArrayList<Question> general = new ArrayList<>();
@@ -110,6 +110,8 @@ public class RecommendationsActivity extends AppCompatActivity {
         //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
         String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
 
+        CountDownLatch latch = new CountDownLatch(1);
+
         Request req = new Request.Builder()
                 .url(url)
                 .get()
@@ -119,6 +121,8 @@ public class RecommendationsActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 System.out.println("Error fetching email general recommendations");
+                e.printStackTrace();
+                latch.countDown();
             }
 
             @Override
@@ -140,31 +144,38 @@ public class RecommendationsActivity extends AppCompatActivity {
                         }
 
                     }
-                    System.out.println("Weight: "+weight_average+" Count: "+question_counter);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            score.setText(String.format("%.1f", weight_average));
-                            rec_adapter.notifyDataSetChanged();
-                        }
+                    //System.out.println("Weight: "+weight_average+" Count: "+question_counter);
+                    latch.countDown();
+                    /*
+                    runOnUiThread(() -> {
+                        score.setText(String.format("%.1f", weight_average));
+                        rec_adapter.notifyDataSetChanged();
                     });
-                    //System.out.println(gen_rec);
+
+                     */
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
-                //System.out.println(obj);
             }
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        score.setText(String.format("%.1f", weight_average));
+        rec_adapter.notifyDataSetChanged();
 
     }
 
     public void getTargetedEmailRecommendations(String tablename, ArrayList<Recommendation> tempreclist, ArrayList<Question> comparelist) {
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
-        //String url1 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
-        //String url1 = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
-        //String url2 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=2";
+        //String url = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=" + tablename;
         String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=" + tablename;
         Integer tblint = new Integer(tablename);
+
+        CountDownLatch latch = new CountDownLatch(1);
+
 
         Request req = new Request.Builder()
                 .url(url)
@@ -175,6 +186,8 @@ public class RecommendationsActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 System.out.println("Error fetching email general recommendations");
+                e.printStackTrace();
+                latch.countDown();
             }
 
             @Override
@@ -195,24 +208,31 @@ public class RecommendationsActivity extends AppCompatActivity {
                         }
                         question_counter += 1;
                     }
+                    latch.countDown();
 
-                    System.out.println("Weight: "+weight_average+" Count: "+question_counter);
-                    //System.out.println(weight_average);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //rec_all.addAll(tempreclist);
-                            //score.setText(String.valueOf(weight_average));
-                            score.setText(String.format("%.1f", weight_average));
-                            rec_adapter.notifyDataSetChanged();
-                        }
+                    //System.out.println("Weight: "+weight_average+" Count: "+question_counter);
+                    /*
+                    runOnUiThread(() -> {
+                        //rec_all.addAll(tempreclist);
+                        //score.setText(String.valueOf(weight_average));
+                        score.setText(String.format("%.1f", weight_average));
+                        rec_adapter.notifyDataSetChanged();
                     });
+
+                     */
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
                 //System.out.println(obj);
             }
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        score.setText(String.format("%.1f", weight_average));
+        rec_adapter.notifyDataSetChanged();
 
     }
 
@@ -221,6 +241,8 @@ public class RecommendationsActivity extends AppCompatActivity {
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
         //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
         String url = "https://192.168.0.32:8443/recommendationsHandler?param=browsersecuritygeneral";
+
+        CountDownLatch latch = new CountDownLatch(1);
 
         Request req = new Request.Builder()
                 .url(url)
@@ -231,6 +253,7 @@ public class RecommendationsActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 System.out.println("Error fetching email general recommendations");
+                latch.countDown();
             }
 
             @Override
@@ -253,15 +276,17 @@ public class RecommendationsActivity extends AppCompatActivity {
                         }
 
                     }
-                    System.out.println("Weight: "+weight_average+" Count: "+question_counter);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            score.setText(String.format("%.1f", weight_average));
 
-                            rec_adapter.notifyDataSetChanged();
-                        }
+                    latch.countDown();
+                    //System.out.println("Weight: "+weight_average+" Count: "+question_counter);
+                    /*
+                    runOnUiThread(() -> {
+                        score.setText(String.format("%.1f", weight_average));
+
+                        rec_adapter.notifyDataSetChanged();
                     });
+
+                     */
                     //System.out.println(gen_rec);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
@@ -269,6 +294,13 @@ public class RecommendationsActivity extends AppCompatActivity {
                 //System.out.println(obj);
             }
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        score.setText(String.format("%.1f", weight_average));
+        rec_adapter.notifyDataSetChanged();
 
     }
 
@@ -280,6 +312,8 @@ public class RecommendationsActivity extends AppCompatActivity {
         String url = "https://192.168.0.32:8443/recommendationsHandler?param=browsersecuritytargeted&targetedtable=" + tablename;
         Integer tblint = new Integer(tablename);
 
+        CountDownLatch latch = new CountDownLatch(1);
+
         Request req = new Request.Builder()
                 .url(url)
                 .get()
@@ -289,6 +323,7 @@ public class RecommendationsActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 System.out.println("Error fetching email general recommendations");
+                latch.countDown();
             }
 
             @Override
@@ -309,23 +344,31 @@ public class RecommendationsActivity extends AppCompatActivity {
                         }
                         question_counter += 1;
                     }
-                    System.out.println("Weight: "+weight_average+" Count: "+question_counter);
-                    //System.out.println("Weight: "+weight_total+" Count: "+question_counter);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //rec_all.addAll(tempreclist);
-                            score.setText(String.format("%.1f", weight_average));
-                            rec_adapter.notifyDataSetChanged();
-                        }
+                    latch.countDown();
+                    //System.out.println("Weight: "+weight_average+" Count: "+question_counter);
+                    //System.out.println("Weight: "+weight_total+" Count: "+question_counter);
+                    /*
+                    runOnUiThread(() -> {
+                        //rec_all.addAll(tempreclist);
+                        score.setText(String.format("%.1f", weight_average));
+                        rec_adapter.notifyDataSetChanged();
                     });
+
+                     */
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
                 //System.out.println(obj);
             }
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        score.setText(String.format("%.1f", weight_average));
+        rec_adapter.notifyDataSetChanged();
     }
 
 }

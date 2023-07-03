@@ -8,29 +8,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -39,20 +38,13 @@ import okhttp3.Request;
 import okhttp3.Response;
 public class EmailQuestionnaire extends AppCompatActivity {
     ArrayList<Question> general_questions = new ArrayList<>();
-    ArrayList<Question> targeted_1 = new ArrayList<>();
-    ArrayList<Question> targeted_2 = new ArrayList<>();
+    ArrayList<Question> targeted_questions = new ArrayList<>();
     private RecyclerView box;
-    // 2 different adapter views are used
-    // switching the answer text requires them to be apart of the adapter/holder method system
     private RecyclerView target_box;
-    private RecyclerView target2;
     private QuestionAdapter adapter;
     //private Integer weight_total;
     //private Integer question_counter;
     private QuestionAdapter targ_adapter;
-    private QuestionAdapter targ2_adapter;
-    private RadioButton yes_btn;
-    private RadioButton no_btn;
     private Button next;
     private Button submit;
 
@@ -75,7 +67,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
         target_box.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new QuestionAdapter(this, general_questions);
-        targ_adapter = new QuestionAdapter(this, targeted_1);
+        targ_adapter = new QuestionAdapter(this, targeted_questions);
 
         box.setAdapter(adapter);
         box.setVisibility(View.VISIBLE);
@@ -121,8 +113,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
         //System.out.println(targeted_all.size());
 
         Intent rec = new Intent(this, RecommendationsActivity.class);
-        rec.putParcelableArrayListExtra("targeted1", targeted_1);
-        //rec.putParcelableArrayListExtra("targeted2", targeted_2);
+        rec.putParcelableArrayListExtra("targeted1", targeted_questions);
         rec.putParcelableArrayListExtra("general", general_questions);
         rec.putExtra("question_type", "email");
         //rec.putExtra("weight_total", weight_total);
@@ -136,7 +127,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
         String url = "https://192.168.0.32:8443/questionsHandler?param=emailgeneral";
-
+        CountDownLatch latch = new CountDownLatch(1);
 
         Request req = new Request.Builder()
                 .url(url)
@@ -149,6 +140,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
+                latch.countDown();
             }
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
@@ -165,20 +157,21 @@ public class EmailQuestionnaire extends AppCompatActivity {
                         general_questions.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), 0));
                         //System.out.println(general_questions.get(i).getQuestionText());
                     }
+                    latch.countDown();
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
+                    //runOnUiThread(() -> adapter.notifyDataSetChanged());
 
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
-
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        adapter.notifyDataSetChanged();
     }
 
     public void getTargetedQuestions(String targetedtable) {
@@ -187,6 +180,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
         String url1 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=" + targetedtable;
 
 
+        CountDownLatch latch = new CountDownLatch(1);
 
         Request req = new Request.Builder()
                  .url(url1)
@@ -196,6 +190,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
              @Override
              public void onFailure(@NonNull Call call, @NonNull IOException e) {
                  e.printStackTrace();
+                 latch.countDown();
 
             }
 
@@ -206,32 +201,14 @@ public class EmailQuestionnaire extends AppCompatActivity {
                 try {
                    JSONObject obj = new JSONObject(response.body().string());
                     JSONArray t = obj.getJSONArray("questions");
-                     //targ1_answered = new Integer[t1.length()];
-                    //targeted1 = new Question[t1.length()];
                    for (int i = 0; i < t.length(); i++) {
                        //targeted1[i] = new Question(t1.getString(i), "");
                         JSONObject q = t.getJSONObject(i);
-                        // TODO: delete if statements when not needed
-                       if(Objects.equals(targetedtable, "1")) {
-                           if(!questionExists(q.getString("question_text"),  targeted_1)) {
-                               targeted_1.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
-                           }
-                           //targeted_1.add(new Question(t.getString(i), "no"));
-                       } else if(Objects.equals(targetedtable, "2")) {
-                           if(!questionExists(q.getString("question_text"),  targeted_1)) {
-                               targeted_1.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
-                           }
-                           //targeted_2.add(new Question(t.getString(i), "no"));
+                       if(!questionExists(q.getString("question_text"),  targeted_questions)) {
+                           targeted_questions.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
                        }
                     }
-
-                   runOnUiThread(new Runnable() {
-                       @Override
-                        public void run() {
-                            targ_adapter.notifyDataSetChanged();
-                            //targ2_adapter.notifyDataSetChanged();
-                       }
-                   });
+                   latch.countDown();
 
 
                } catch (JSONException e) {
@@ -239,5 +216,11 @@ public class EmailQuestionnaire extends AppCompatActivity {
               }
           }
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        targ_adapter.notifyDataSetChanged();
     }
 }
