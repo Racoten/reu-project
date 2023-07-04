@@ -92,7 +92,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
 
         for(int i = 0; i < general_questions.size(); i++) {
 
-            if(general_questions.get(i).getAnswer() == "yes") {
+            if(!Objects.equals(general_questions.get(i).getAnswer(), "no")) {
                 //weight_total += general_questions.get(i).getWeight();
                 Integer temp = i+1;
                 //question_counter += 1;

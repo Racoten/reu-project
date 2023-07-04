@@ -27,5 +27,22 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="No" />
+
+        <RadioButton
+            android:id="@+id/maybe_btn"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="Maybe" />
+
     </RadioGroup>
+
+    <EditText
+        android:id="@+id/maybe_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Maybe"
+        android:inputType="text"
+        android:textSize="14sp" />
+
 </LinearLayout>

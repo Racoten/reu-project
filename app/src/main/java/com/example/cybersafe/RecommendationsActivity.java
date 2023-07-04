@@ -72,13 +72,13 @@ public class RecommendationsActivity extends AppCompatActivity {
 
 
 
-            if (Objects.equals(general.get(0).getAnswer(), "yes")) {
+            if (!Objects.equals(general.get(0).getAnswer(), "no")) {
                 question_counter += 1;
                 //System.out.println("getting first questions");
                 getTargetedEmailRecommendations("1", temp1, targeted1);
             }
 
-            if (Objects.equals(general.get(1).getAnswer(), "yes")) {
+            if (!Objects.equals(general.get(1).getAnswer(), "no")) {
                 question_counter += 1;
                 //System.out.println("Getting second questions");
                 getTargetedEmailRecommendations("2", temp2, targeted1);
@@ -88,12 +88,12 @@ public class RecommendationsActivity extends AppCompatActivity {
         } else if(Objects.equals(type, "browser")) {
             getGeneralBrowserRecommendations();
 
-            if(Objects.equals(general.get(0).getAnswer(), "yes")) {
+            if(!Objects.equals(general.get(0).getAnswer(), "no")) {
                 question_counter += 1;
 
                 getTargetedBrowserRecommendations("1", temp1, targeted1);
             }
-            if(Objects.equals(general.get(1).getAnswer(), "yes")) {
+            if(!Objects.equals(general.get(1).getAnswer(), "no")) {
                 question_counter += 1;
                 getTargetedBrowserRecommendations("2", temp2, targeted1);
             }
@@ -149,7 +149,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                     //System.out.println(gen_rec.toString());
                     for(int i = 0; i < gen_rec.length(); i++) {
 
-                        if(Objects.equals(general.get(i).getAnswer(), "yes")) {
+                        if(!Objects.equals(general.get(i).getAnswer(), "no")) {
                             JSONObject ro = gen_rec.getJSONObject(i);
                             //question_counter += 1;
                             weight_total += general.get(i).getWeight();
@@ -217,7 +217,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                         JSONObject ro = t1_rec.getJSONObject(i);
 
                         // fix if statement
-                        if(Objects.equals(tableq.get(i).getAnswer(), "yes") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
+                        if(!Objects.equals(tableq.get(i).getAnswer(), "no") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
                             weight_total += tableq.get(i).getWeight();
                             rec_all.add(new Recommendation(ro.getString("RecommendationText")));
 
@@ -282,7 +282,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                     //System.out.println(gen_rec.toString());
                     for(int i = 0; i < gen_rec.length(); i++) {
 
-                        if(Objects.equals(general.get(i).getAnswer(), "yes")) {
+                        if(!Objects.equals(general.get(i).getAnswer(), "no")) {
                             JSONObject ro  = gen_rec.getJSONObject(i);
 
                             question_counter += 1;
@@ -351,7 +351,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                     for (int i = 0; i < t1_rec.length(); i++) {
                         JSONObject ro = t1_rec.getJSONObject(i);
 
-                        if(Objects.equals(tableq.get(i).getAnswer(), "yes") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
+                        if(!Objects.equals(tableq.get(i).getAnswer(), "no") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
                             weight_total += tableq.get(i).getWeight();
                             //question_counter += 1;
                             rec_all.add(new Recommendation(ro.getString("RecommendationText")));
