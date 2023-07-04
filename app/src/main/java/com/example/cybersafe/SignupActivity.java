@@ -43,7 +43,7 @@ public class SignupActivity extends AppCompatActivity {
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/appAuth";
-        String url = "https://192.168.0.32:8443/appAuth";
+        String url = "https://"+apiHandler.URL_STR+"/appAuth";
 
         //String params = "param=login&username=test&password=test";
         String user = username.getText().toString();

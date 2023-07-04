@@ -47,11 +47,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/q_box"
         android:layout_width="0dp"
-        android:layout_height="434dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="64dp"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:scrollbars="vertical"
         android:visibility="visible"
@@ -65,17 +65,16 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/target_box"
         android:layout_width="0dp"
-        android:layout_height="505dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="64dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/next_question"
+        app:layout_constraintBottom_toTopOf="@+id/submit_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_question_heading"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/email_question_heading" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

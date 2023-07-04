@@ -35,11 +35,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/browser_question_general"
         android:layout_width="0dp"
-        android:layout_height="527dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="64dp"
         android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/browser_heading">
@@ -61,11 +63,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/browser_target_1"
         android:layout_width="0dp"
-        android:layout_height="530dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="64dp"
         android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/browser_submit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/browser_heading" />

@@ -27,13 +27,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/*
-TODO: all recommendations do show up, however sometimes they aren't added to the recyclerview's arraylist fast enough
-    Figure out how to block UI until all recommendations appear.
-    When only 1 general question is selected, all recommendations show up in time, and count is updated correctly.
-    However, when both general questions are selected, not all of them show up.
 
- */
+// NOTE: Don't change runOnUiThread calls to lambdas
+
+// TODO: determine if countdown latch is really necessary
 public class RecommendationsActivity extends AppCompatActivity {
     private ArrayList<Question> targeted1 = new ArrayList<>();
 
@@ -56,8 +53,9 @@ public class RecommendationsActivity extends AppCompatActivity {
         Intent i = getIntent();
         general = i.getParcelableArrayListExtra("general");
         targeted1 = i.getParcelableArrayListExtra("targeted1");
-        //targeted2 = i.getParcelableArrayListExtra("targeted2");
         String type = i.getStringExtra("question_type");
+
+
         //weight_total = i.getIntExtra("weight_total", 0);
         //question_counter = i.getIntExtra("question_counter", 0);
 
@@ -73,15 +71,20 @@ public class RecommendationsActivity extends AppCompatActivity {
             getGeneralEmailRecommendations();
 
 
+
             if (Objects.equals(general.get(0).getAnswer(), "yes")) {
                 question_counter += 1;
+                //System.out.println("getting first questions");
                 getTargetedEmailRecommendations("1", temp1, targeted1);
             }
 
             if (Objects.equals(general.get(1).getAnswer(), "yes")) {
                 question_counter += 1;
+                //System.out.println("Getting second questions");
                 getTargetedEmailRecommendations("2", temp2, targeted1);
             }
+
+
         } else if(Objects.equals(type, "browser")) {
             getGeneralBrowserRecommendations();
 
@@ -104,13 +107,25 @@ public class RecommendationsActivity extends AppCompatActivity {
         weight_average = (double) ( weight_total / question_counter);
     }
 
+    public ArrayList<Question> getQuestionTable(ArrayList<Question> all, Integer table) {
+        ArrayList<Question> t = new ArrayList<>();
+        for(int i = 0; i < all.size(); i++) {
+            if(Objects.equals(all.get(i).getTable(), table)) {
+                t.add(all.get(i));
+            }
+        }
+        return t;
+    }
+
     public void getGeneralEmailRecommendations() {
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
         //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
-        String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
+        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=emailgeneral";
 
+        //CountDownLatch latch = new CountDownLatch(1);
         CountDownLatch latch = new CountDownLatch(1);
+
 
         Request req = new Request.Builder()
                 .url(url)
@@ -122,7 +137,7 @@ public class RecommendationsActivity extends AppCompatActivity {
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 System.out.println("Error fetching email general recommendations");
                 e.printStackTrace();
-                latch.countDown();
+                //latch.countDown();
             }
 
             @Override
@@ -146,36 +161,34 @@ public class RecommendationsActivity extends AppCompatActivity {
                     }
                     //System.out.println("Weight: "+weight_average+" Count: "+question_counter);
                     latch.countDown();
-                    /*
-                    runOnUiThread(() -> {
-                        score.setText(String.format("%.1f", weight_average));
-                        rec_adapter.notifyDataSetChanged();
-                    });
-
-                     */
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
+
         try {
             latch.await();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+
         score.setText(String.format("%.1f", weight_average));
         rec_adapter.notifyDataSetChanged();
+
+
 
     }
 
     public void getTargetedEmailRecommendations(String tablename, ArrayList<Recommendation> tempreclist, ArrayList<Question> comparelist) {
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=" + tablename;
-        String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=" + tablename;
+        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=emailtargeted&targetedtable=" + tablename;
         Integer tblint = new Integer(tablename);
 
+        //CountDownLatch latch = new CountDownLatch(1);
         CountDownLatch latch = new CountDownLatch(1);
-
 
         Request req = new Request.Builder()
                 .url(url)
@@ -187,7 +200,7 @@ public class RecommendationsActivity extends AppCompatActivity {
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 System.out.println("Error fetching email general recommendations");
                 e.printStackTrace();
-                latch.countDown();
+                //latch.countDown();
             }
 
             @Override
@@ -197,42 +210,46 @@ public class RecommendationsActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(response.body().string());
                     JSONArray t1_rec = obj.getJSONArray("recommendations");
                     //System.out.println(t1_rec);
+                    // filter out questions from specific table
+                    ArrayList<Question> tableq = getQuestionTable(comparelist, Integer.valueOf(tablename));
                     for (int i = 0; i < t1_rec.length(); i++) {
-                        if(Objects.equals(comparelist.get(i).getAnswer(), "yes") && Objects.equals(comparelist.get(i).getTable(), Integer.valueOf(tablename))) {
-                            JSONObject ro = t1_rec.getJSONObject(i);
-                            weight_total += comparelist.get(i).getWeight();
+                        //System.out.println(comparelist.get(i).getQuestionText());
+                        JSONObject ro = t1_rec.getJSONObject(i);
 
+                        // fix if statement
+                        if(Objects.equals(tableq.get(i).getAnswer(), "yes") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
+                            weight_total += tableq.get(i).getWeight();
                             rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+
                             setWeightAverage();
 
                         }
+
+
                         question_counter += 1;
                     }
                     latch.countDown();
 
                     //System.out.println("Weight: "+weight_average+" Count: "+question_counter);
-                    /*
-                    runOnUiThread(() -> {
-                        //rec_all.addAll(tempreclist);
-                        //score.setText(String.valueOf(weight_average));
-                        score.setText(String.format("%.1f", weight_average));
-                        rec_adapter.notifyDataSetChanged();
-                    });
 
-                     */
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
                 //System.out.println(obj);
             }
         });
+
         try {
             latch.await();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+
         score.setText(String.format("%.1f", weight_average));
         rec_adapter.notifyDataSetChanged();
+
+
 
     }
 
@@ -240,7 +257,7 @@ public class RecommendationsActivity extends AppCompatActivity {
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
         //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
-        String url = "https://192.168.0.32:8443/recommendationsHandler?param=browsersecuritygeneral";
+        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=browsersecuritygeneral";
 
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -253,7 +270,7 @@ public class RecommendationsActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 System.out.println("Error fetching email general recommendations");
-                latch.countDown();
+                //latch.countDown();
             }
 
             @Override
@@ -279,14 +296,7 @@ public class RecommendationsActivity extends AppCompatActivity {
 
                     latch.countDown();
                     //System.out.println("Weight: "+weight_average+" Count: "+question_counter);
-                    /*
-                    runOnUiThread(() -> {
-                        score.setText(String.format("%.1f", weight_average));
 
-                        rec_adapter.notifyDataSetChanged();
-                    });
-
-                     */
                     //System.out.println(gen_rec);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
@@ -294,6 +304,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                 //System.out.println(obj);
             }
         });
+
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -302,6 +313,8 @@ public class RecommendationsActivity extends AppCompatActivity {
         score.setText(String.format("%.1f", weight_average));
         rec_adapter.notifyDataSetChanged();
 
+
+
     }
 
     public void getTargetedBrowserRecommendations(String tablename, ArrayList<Recommendation> tempreclist, ArrayList<Question> comparelist) {
@@ -309,7 +322,7 @@ public class RecommendationsActivity extends AppCompatActivity {
         //String url1 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
         //String url1 = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
         //String url2 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=2";
-        String url = "https://192.168.0.32:8443/recommendationsHandler?param=browsersecuritytargeted&targetedtable=" + tablename;
+        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=browsersecuritytargeted&targetedtable=" + tablename;
         Integer tblint = new Integer(tablename);
 
         CountDownLatch latch = new CountDownLatch(1);
@@ -323,7 +336,7 @@ public class RecommendationsActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 System.out.println("Error fetching email general recommendations");
-                latch.countDown();
+                //latch.countDown();
             }
 
             @Override
@@ -333,10 +346,13 @@ public class RecommendationsActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(response.body().string());
                     JSONArray t1_rec = obj.getJSONArray("recommendations");
                     //System.out.println(t1_rec);
+                    ArrayList<Question> tableq = getQuestionTable(comparelist, Integer.valueOf(tablename));
+
                     for (int i = 0; i < t1_rec.length(); i++) {
-                        if(Objects.equals(comparelist.get(i).getAnswer(), "yes") && Objects.equals(comparelist.get(i).getTable(), Integer.valueOf(tablename))) {
-                            JSONObject ro = t1_rec.getJSONObject(i);
-                            weight_total += comparelist.get(i).getWeight();
+                        JSONObject ro = t1_rec.getJSONObject(i);
+
+                        if(Objects.equals(tableq.get(i).getAnswer(), "yes") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
+                            weight_total += tableq.get(i).getWeight();
                             //question_counter += 1;
                             rec_all.add(new Recommendation(ro.getString("RecommendationText")));
                             setWeightAverage();
@@ -346,22 +362,14 @@ public class RecommendationsActivity extends AppCompatActivity {
                     }
 
                     latch.countDown();
-                    //System.out.println("Weight: "+weight_average+" Count: "+question_counter);
-                    //System.out.println("Weight: "+weight_total+" Count: "+question_counter);
-                    /*
-                    runOnUiThread(() -> {
-                        //rec_all.addAll(tempreclist);
-                        score.setText(String.format("%.1f", weight_average));
-                        rec_adapter.notifyDataSetChanged();
-                    });
 
-                     */
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
                 //System.out.println(obj);
             }
         });
+
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -369,6 +377,8 @@ public class RecommendationsActivity extends AppCompatActivity {
         }
         score.setText(String.format("%.1f", weight_average));
         rec_adapter.notifyDataSetChanged();
+
+
     }
 
 }

@@ -126,7 +126,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
-        String url = "https://192.168.0.32:8443/questionsHandler?param=emailgeneral";
+        String url = "https://"+apiHandler.URL_STR+"/questionsHandler?param=emailgeneral";
         CountDownLatch latch = new CountDownLatch(1);
 
         Request req = new Request.Builder()
@@ -177,7 +177,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
     public void getTargetedQuestions(String targetedtable) {
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
-        String url1 = "https://192.168.0.32:8443/questionsHandler?param=emailtargeted&targetedtable=" + targetedtable;
+        String url1 = "https://"+apiHandler.URL_STR+"/questionsHandler?param=emailtargeted&targetedtable=" + targetedtable;
 
 
         CountDownLatch latch = new CountDownLatch(1);
