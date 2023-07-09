@@ -70,8 +70,15 @@ public class RecommendationsActivity extends AppCompatActivity {
         if(Objects.equals(type, "email")) {
             getGeneralEmailRecommendations();
 
+            for(int k = 0; k < general.size(); k++) {
+                question_counter += 1;
+                if(!Objects.equals(general.get(k).getAnswer(), "no")) {
+                    getTargetedEmailRecommendations(String.valueOf(k+1), temp1, targeted1);
 
+                }
+            }
 
+            /*
             if (!Objects.equals(general.get(0).getAnswer(), "no")) {
                 question_counter += 1;
                 //System.out.println("getting first questions");
@@ -84,10 +91,21 @@ public class RecommendationsActivity extends AppCompatActivity {
                 getTargetedEmailRecommendations("2", temp2, targeted1);
             }
 
+             */
+
 
         } else if(Objects.equals(type, "browser")) {
             getGeneralBrowserRecommendations();
 
+            for(int k = 0; k < general.size(); k++) {
+                question_counter += 1;
+                if(!Objects.equals(general.get(k).getAnswer(), "no")) {
+                    getTargetedBrowserRecommendations(String.valueOf(k+1), temp1, targeted1);
+
+                }
+            }
+
+            /*
             if(!Objects.equals(general.get(0).getAnswer(), "no")) {
                 question_counter += 1;
 
@@ -97,6 +115,8 @@ public class RecommendationsActivity extends AppCompatActivity {
                 question_counter += 1;
                 getTargetedBrowserRecommendations("2", temp2, targeted1);
             }
+
+             */
         }
         //setWeightAverage();
         //score.setText(String.valueOf(weight_average));
