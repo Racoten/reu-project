@@ -72,6 +72,20 @@ CREATE TABLE `BrowserSecurityQuestionsTargeted2` (
     PRIMARY KEY(`QuestionID`)
 );
 
+CREATE TABLE `EmailQuestionsTargeted3` (
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
+);
+
+CREATE TABLE `BrowserSecurityQuestionsTargeted3` (
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
+);
+
 CREATE TABLE `QuestionnaireQuestions` (
     `QuestionnaireID` INT,
     `QuestionID` INT,
@@ -120,6 +134,18 @@ CREATE TABLE `EmailRecommendationsTargeted2` (
 );
 
 CREATE TABLE `BrowserSecurityRecommendationsTargeted2` (
+    `RecommendationID` INT AUTO_INCREMENT,
+    `RecommendationText` TEXT NOT NULL,
+    PRIMARY KEY(`RecommendationID`)
+);
+
+CREATE TABLE `EmailRecommendationsTargeted3` (
+    `RecommendationID` INT AUTO_INCREMENT,
+    `RecommendationText` TEXT NOT NULL,
+    PRIMARY KEY(`RecommendationID`)
+);
+
+CREATE TABLE `BrowserSecurityRecommendationsTargeted3` (
     `RecommendationID` INT AUTO_INCREMENT,
     `RecommendationText` TEXT NOT NULL,
     PRIMARY KEY(`RecommendationID`)
@@ -206,6 +232,17 @@ SET @last_email_question_id = LAST_INSERT_ID();
 
 INSERT INTO `EmailRecommendations` (`RecommendationText`) 
 VALUES ('Always question the legitimacy of emails from unknown sources. When in doubt, verify through other means.');
+
+SET @last_email_recommendation_id = LAST_INSERT_ID();
+
+INSERT INTO `EGQuestionRecommendation` (`QuestionID`, `RecommendationID`) 
+VALUES (@last_email_question_id, @last_email_recommendation_id);
+
+INSERT INTO `EmailQuestions` (`QuestionText`, `Weight`) 
+VALUES ('Are there any documents attached?', 6);
+
+INSERT INTO `EmailRecommendations` (`RecommendationText`) 
+VALUES ('Make sure attachments are from a trusted source from which you have recieved documents from before');
 
 SET @last_email_recommendation_id = LAST_INSERT_ID();
 
@@ -360,12 +397,44 @@ SET @last_email_recommendation4_id = LAST_INSERT_ID();
 INSERT INTO `ET2QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
 VALUES (@last_email_question4_id, @last_email_recommendation4_id);
 
+INSERT INTO `EmailQuestionsTargeted3` (`QuestionText`, `Weight`) 
+VALUES ('What is the file type/extension', 6);
+SET @last_email_question4_id = LAST_INSERT_ID();
+
+INSERT INTO `EmailRecommendationsTargeted3` (`RecommendationText`) 
+VALUES ('Even benign file extensions can be hiding malware.');
+SET @last_email_recommendation4_id = LAST_INSERT_ID();
+
+INSERT INTO `EmailQuestionsTargeted3` (`QuestionText`, `Weight`) 
+VALUES ('How big is the file?', 7);
+SET @last_email_question4_id = LAST_INSERT_ID();
+
+INSERT INTO `EmailRecommendationsTargeted3` (`RecommendationText`) 
+VALUES ('Larger files can be sign that there is an additional program inside, most likely malware.');
+SET @last_email_recommendation4_id = LAST_INSERT_ID();
+
+INSERT INTO `EmailQuestionsTargeted3` (`QuestionText`, `Weight`) 
+VALUES ('Does the file require a program running on the device?', 5);
+SET @last_email_question4_id = LAST_INSERT_ID();
+
+INSERT INTO `EmailRecommendationsTargeted3` (`RecommendationText`) 
+VALUES ('If necessary, opening files like word documents or pdfs should be done within the browser. Otherwise, it is best to not open these files.');
+SET @last_email_recommendation4_id = LAST_INSERT_ID();
+
+INSERT INTO `EmailQuestionsTargeted3` (`QuestionText`, `Weight`) 
+VALUES ('Does the file name hint at its contents', 4);
+SET @last_email_question4_id = LAST_INSERT_ID();
+
+INSERT INTO `EmailRecommendationsTargeted3` (`RecommendationText`) 
+VALUES ('Ambigious/vague filenames can cause users to take risks, prompting them to open them when they may be malicious.');
+SET @last_email_recommendation4_id = LAST_INSERT_ID();
+
 INSERT INTO `BrowserSecurityQuestionsTargeted1` (`QuestionText`, `Weight`) 
-VALUES ('Is the site asking for any permissions?', 7);
+VALUES ('Is the network password protected?', 7);
 SET @last_browser_question1_id = LAST_INSERT_ID();
 
 INSERT INTO `BrowserSecurityRecommendationsTargeted1` (`RecommendationText`) 
-VALUES ('Only provide permissions to trustworthy sites. If unsure, deny the request.');
+VALUES ('Public WIFI networks that are password protected still provide some level of encryption.');
 SET @last_browser_recommendation1_id = LAST_INSERT_ID();
 
 INSERT INTO `BST1QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
@@ -373,11 +442,11 @@ VALUES (@last_browser_question1_id, @last_browser_recommendation1_id);
 
 
 INSERT INTO `BrowserSecurityQuestionsTargeted1` (`QuestionText`, `Weight`) 
-VALUES ('Is the site using https?', 5);
+VALUES ('Is the network being used by lots of people?', 5);
 SET @last_browser_question2_id = LAST_INSERT_ID();
 
 INSERT INTO `BrowserSecurityRecommendationsTargeted1` (`RecommendationText`) 
-VALUES ('Always ensure the site uses https for secure communication.');
+VALUES ('Public networks, especially ones with a large number of users, are not monitored as heavily.');
 SET @last_browser_recommendation2_id = LAST_INSERT_ID();
 
 INSERT INTO `BST1QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
@@ -385,49 +454,49 @@ VALUES (@last_browser_question2_id, @last_browser_recommendation2_id);
 
 
 INSERT INTO `BrowserSecurityQuestionsTargeted1` (`QuestionText`, `Weight`) 
-VALUES ('Does the site have a valid certificate?', 8);
+VALUES ('What device are you accessing the network from (work/personal)?', 8);
 SET @last_browser_question3_id = LAST_INSERT_ID();
 
 INSERT INTO `BrowserSecurityRecommendationsTargeted1` (`RecommendationText`) 
-VALUES ('Verify the validity of the site certificate.');
+VALUES ('Depending on what the device is used for, this could expose information about your personal info or private business information.');
 SET @last_browser_recommendation3_id = LAST_INSERT_ID();
 
 INSERT INTO `BST1QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
 VALUES (@last_browser_question3_id, @last_browser_recommendation3_id);
 
 INSERT INTO `BrowserSecurityQuestionsTargeted1` (`QuestionText`, `Weight`) 
-VALUES ('Does the site use secure cookies?', 8);
+VALUES ('Are you trying to access sensitive information (healthcare, banking, etc.)?', 8);
 SET @last_browser_question4_id = LAST_INSERT_ID();
 
 INSERT INTO `BrowserSecurityRecommendationsTargeted1` (`RecommendationText`) 
-VALUES ('Check if the site uses secure cookies.');
+VALUES ('Credentials can be stolen with Man in the Middle (MITM) attacks. Multi-factor authentication can help with this, but it is not guaranteed that every service will have it.');
 SET @last_browser_recommendation4_id = LAST_INSERT_ID();
 
 INSERT INTO `BST1QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
 VALUES (@last_browser_question4_id, @last_browser_recommendation4_id);
 
 
-INSERT INTO `BrowserSecurityQuestionsTargeted1` (`QuestionText`, `Weight`) 
+INSERT INTO `BrowserSecurityQuestionsTargeted2` (`QuestionText`, `Weight`) 
 VALUES ('Does the site have a visible and clear privacy policy?', 6);
 SET @last_browser_question5_id = LAST_INSERT_ID();
 
-INSERT INTO `BrowserSecurityRecommendationsTargeted1` (`RecommendationText`) 
+INSERT INTO `BrowserSecurityRecommendationsTargeted2` (`RecommendationText`) 
 VALUES ('Always read the site’s privacy policy and terms of use.');
 SET @last_browser_recommendation5_id = LAST_INSERT_ID();
 
-INSERT INTO `BST1QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
+INSERT INTO `BST2QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
 VALUES (@last_browser_question5_id, @last_browser_recommendation5_id);
 
 
-INSERT INTO `BrowserSecurityQuestionsTargeted1` (`QuestionText`, `Weight`) 
+INSERT INTO `BrowserSecurityQuestionsTargeted2` (`QuestionText`, `Weight`) 
 VALUES ('Does the site have third party tracking scripts?', 9);
 SET @last_browser_question6_id = LAST_INSERT_ID();
 
-INSERT INTO `BrowserSecurityRecommendationsTargeted1` (`RecommendationText`) 
+INSERT INTO `BrowserSecurityRecommendationsTargeted2` (`RecommendationText`) 
 VALUES ('Be cautious about third-party tracking scripts, as they can be used for malicious activities.');
 SET @last_browser_recommendation6_id = LAST_INSERT_ID();
 
-INSERT INTO `BST1QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
+INSERT INTO `BST2QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
 VALUES (@last_browser_question6_id, @last_browser_recommendation6_id);
 
 INSERT INTO `BrowserSecurityQuestionsTargeted2` (`QuestionText`, `Weight`) 
@@ -471,6 +540,28 @@ SET @last_browser_question4_id2 = LAST_INSERT_ID();
 
 INSERT INTO `BrowserSecurityRecommendationsTargeted2` (`RecommendationText`) 
 VALUES ('Always consider what permissions a website is asking for. Avoid granting permissions if they are not necessary for the site functionality.');
+SET @last_browser_recommendation4_id2 = LAST_INSERT_ID();
+
+INSERT INTO `BST2QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
+VALUES (@last_browser_question4_id2, @last_browser_recommendation4_id2);
+
+INSERT INTO `BrowserSecurityQuestionsTargeted2` (`QuestionText`, `Weight`) 
+VALUES ('Is the site using https?', 7);
+SET @last_browser_question4_id2 = LAST_INSERT_ID();
+
+INSERT INTO `BrowserSecurityRecommendationsTargeted2` (`RecommendationText`) 
+VALUES ('Beware of sites that do not use https, since it is fairly ubiquitious among modern websites.');
+SET @last_browser_recommendation4_id2 = LAST_INSERT_ID();
+
+INSERT INTO `BST2QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
+VALUES (@last_browser_question4_id2, @last_browser_recommendation4_id2);
+
+INSERT INTO `BrowserSecurityQuestionsTargeted2` (`QuestionText`, `Weight`) 
+VALUES ('Does the site use secure cookies?', 6);
+SET @last_browser_question4_id2 = LAST_INSERT_ID();
+
+INSERT INTO `BrowserSecurityRecommendationsTargeted2` (`RecommendationText`) 
+VALUES ('Check if the site has secure cookies.');
 SET @last_browser_recommendation4_id2 = LAST_INSERT_ID();
 
 INSERT INTO `BST2QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
