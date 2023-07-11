@@ -199,6 +199,72 @@ CREATE TABLE `BST2QuestionRecommendation` (
     FOREIGN KEY(`RecommendationID`) REFERENCES `BrowserSecurityRecommendationsTargeted2`(`RecommendationID`)
 );
 
+CREATE TABLE `SMSQuestions` (
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
+);
+
+CREATE TABLE `SMSTargetedQuestions1` (
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
+);
+
+CREATE TABLE `SMSTargetedQuestions2` (
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
+);
+
+CREATE TABLE `SMSRecommendations` (
+    `RecommendationID` INT AUTO_INCREMENT,
+    `RecommendationText` TEXT NOT NULL,
+    PRIMARY KEY(`RecommendationID`)
+);
+
+CREATE TABLE `SMSTargetedRecommendations1` (
+    `RecommendationID` INT AUTO_INCREMENT,
+    `RecommendationText` TEXT NOT NULL,
+    PRIMARY KEY(`RecommendationID`)
+);
+
+CREATE TABLE `SMSTargetedRecommendations2` (
+    `RecommendationID` INT AUTO_INCREMENT,
+    `RecommendationText` TEXT NOT NULL,
+    PRIMARY KEY(`RecommendationID`)
+);
+
+CREATE TABLE `SMGQuestionRecommendation` (
+    `QuestionID` INT,
+    `RecommendationID` INT,
+    PRIMARY KEY(`QuestionID`, `RecommendationID`),
+    FOREIGN KEY(`QuestionID`) REFERENCES `SMSQuestions`(`QuestionID`),
+    FOREIGN KEY(`RecommendationID`) REFERENCES `SMSRecommendations`(`RecommendationID`)
+);
+
+CREATE TABLE `ST1QuestionRecommendation` (
+    `QuestionID` INT,
+    `RecommendationID` INT,
+    PRIMARY KEY(`QuestionID`, `RecommendationID`),
+    FOREIGN KEY(`QuestionID`) REFERENCES `SMSTargetedQuestions1`(`QuestionID`),
+    FOREIGN KEY(`RecommendationID`) REFERENCES `SMSTargetedRecommendations1`(`RecommendationID`)
+);
+
+CREATE TABLE `ST2QuestionRecommendation` (
+    `QuestionID` INT,
+    `RecommendationID` INT,
+    PRIMARY KEY(`QuestionID`, `RecommendationID`),
+    FOREIGN KEY(`QuestionID`) REFERENCES `SMSTargetedQuestions2`(`QuestionID`),
+    FOREIGN KEY(`RecommendationID`) REFERENCES `SMSTargetedRecommendations2`(`RecommendationID`)
+);
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
+
 INSERT INTO `AttackTypes` (`AttackTypeName`) VALUES 
     ('Email'), 
     ('BrowserSecurity');
@@ -566,4 +632,119 @@ SET @last_browser_recommendation4_id2 = LAST_INSERT_ID();
 
 INSERT INTO `BST2QuestionRecommendation` (`QuestionID`, `RecommendationID`) 
 VALUES (@last_browser_question4_id2, @last_browser_recommendation4_id2);
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+INSERT INTO `SMSQuestions` (`QuestionText`, `Weight`) 
+VALUES ('Do you often receive emails or text messages from unknown sources?', 7);
+SET @last_sms_question_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSTargetedQuestions1` (`QuestionText`, `Weight`) 
+VALUES ('Have you ever received an email from an unknown source asking you to confirm your personal details or passwords?', 9);
+SET @last_sms_targeted_question1_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSTargetedQuestions1` (`QuestionText`, `Weight`) 
+VALUES ('Have you ever received an SMS from an unknown number containing a link to a website?', 8);
+SET @last_sms_targeted_question2_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSTargetedQuestions1` (`QuestionText`, `Weight`) 
+VALUES ('Did you ever receive an email that seemed to be from a known contact, but the email address was different or the message seemed unusual?', 8);
+SET @last_sms_targeted_question3_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSTargetedQuestions1` (`QuestionText`, `Weight`) 
+VALUES ('Have you received an email or text message notifying you about a too-good-to-be-true offer (like a lottery win, unexpected gift, or a fantastic job offer)?', 7);
+SET @last_sms_targeted_question4_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSRecommendations` (`RecommendationText`)
+VALUES ('Always be cautious about unexpected or unsolicited communications. If you do not recognize the sender or if something seems off, it is best not to open the email or click on any links. Keep your email filters updated to help block potential spam.');
+SET @last_sms_recommendation1_id = LAST_INSERT_ID();
+
+INSERT INTO `SMGQuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_recommendation1_id, @last_sms_question_id);
+
+INSERT INTO `SMSTargetedRecommendations1` (`RecommendationText`)
+VALUES ('Never provide your personal information in response to an unsolicited email. Legitimate companies and institutions will never ask for your sensitive data via email.');
+SET @last_sms_recommendation2_id = LAST_INSERT_ID();
+
+INSERT INTO `ST1QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_recommendation2_id, @last_sms_targeted_question1_id);
+
+INSERT INTO `SMSTargetedRecommendations1` (`RecommendationText`)
+VALUES ('Avoid clicking on links from unknown numbers. If the SMS claims to be from a familiar organization, manually type the official website into your browser instead of clicking the link.');
+SET @last_sms_recommendation3_id = LAST_INSERT_ID();
+
+INSERT INTO `ST1QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_targeted_question2_id, @last_sms_recommendation3_id);
+
+INSERT INTO `SMSTargetedRecommendations1` (`RecommendationText`)
+VALUES ('Verify suspicious emails with the supposed sender via another communication method. Cybercriminals can pose as people you know to trick you into revealing sensitive information.');
+SET @last_sms_recommendation4_id = LAST_INSERT_ID();
+
+INSERT INTO `ST1QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_targeted_question3_id, @last_sms_recommendation4_id);
+
+INSERT INTO `SMSTargetedRecommendations1` (`RecommendationText`)
+VALUES ('Be skeptical of offers that seem too good to be true. They often are. Always validate such offers by contacting the company or checking their official website directly.');
+SET @last_sms_recommendation5_id = LAST_INSERT_ID();
+
+INSERT INTO `ST1QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_targeted_question4_id, @last_sms_recommendation5_id);
+
+INSERT INTO `SMSQuestions` (`QuestionText`, `Weight`) 
+VALUES ('Do you verify the legitimacy of websites before entering your personal information?', 8);
+SET @last_sms_question2_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSRecommendations` (`RecommendationText`)
+VALUES ('Always ensure that you are on a secure, legitimate website before entering any personal information. Look for ''https://'' at the start of the URL and a lock symbol in the address bar.');
+SET @last_sms_recommendation10_id = LAST_INSERT_ID();
+
+INSERT INTO `SMGQuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_question2_id, @last_sms_recommendation10_id);
+
+INSERT INTO `SMSTargetedQuestions2` (`QuestionText`, `Weight`) 
+VALUES ('Before logging in or providing personal information, do you check if the website uses a secure connection (https://)?', 8);
+SET @last_sms_targeted_question5_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSTargetedRecommendations2` (`RecommendationText`)
+VALUES ('Always look for ''https://'' in the website URL before entering any sensitive information. This signifies that the website has an SSL certificate, encrypting the data between you and the site.');
+SET @last_sms_recommendation6_id = LAST_INSERT_ID();
+
+INSERT INTO `ST2QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_targeted_question5_id, @last_sms_recommendation6_id);
+
+INSERT INTO `SMSTargetedQuestions2` (`QuestionText`, `Weight`) 
+VALUES ('Do you double-check the URL of the websites to ensure they are spelled correctly and are the official sites they claim to be?', 8);
+SET @last_sms_targeted_question6_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSTargetedRecommendations2` (`RecommendationText`)
+VALUES ('Always verify the spelling of the URL. Phishing websites often use misspelled versions of popular websites or replace a few characters to trick you.');
+SET @last_sms_recommendation7_id = LAST_INSERT_ID();
+
+INSERT INTO `ST2QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_targeted_question6_id, @last_sms_recommendation7_id);
+
+INSERT INTO `SMSTargetedQuestions2` (`QuestionText`, `Weight`) 
+VALUES ('When redirected to a website via email or text message, do you manually enter the official website URL into the browser instead of clicking the link?', 8);
+SET @last_sms_targeted_question7_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSTargetedRecommendations2` (`RecommendationText`)
+VALUES ('Whenever possible, avoid clicking on links in emails and text messages. Instead, manually type the known, official website address into your browser.');
+SET @last_sms_recommendation8_id = LAST_INSERT_ID();
+
+INSERT INTO `ST2QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_targeted_question7_id, @last_sms_recommendation8_id);
+
+INSERT INTO `SMSTargetedQuestions2` (`QuestionText`, `Weight`) 
+VALUES ('Do you look for signs of website legitimacy such as contact information, privacy policy, and proper grammar and spelling?', 7);
+SET @last_sms_targeted_question8_id = LAST_INSERT_ID();
+
+INSERT INTO `SMSTargetedRecommendations2` (`RecommendationText`)
+VALUES ('Always look for signs of legitimacy on a website. Poor grammar, lack of company information, and missing privacy policies may all be indicators of a phishing site.');
+SET @last_sms_recommendation9_id = LAST_INSERT_ID();
+
+INSERT INTO `ST2QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_sms_targeted_question8_id, @last_sms_recommendation9_id);
+
+
+COMMIT
 ```
