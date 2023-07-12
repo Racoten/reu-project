@@ -59,6 +59,22 @@ public class recommendationsHandler extends HttpServlet {
 			out.println(msg.toString());
 		}
 
+		else if(param.equals("smsgeneral")) {
+			ArrayList<String> recommendations = getGeneralRecommendations("SMSRecommendations");
+			StringBuilder msg = new StringBuilder("{ \"recommendations\": [");
+
+			for(int i = 0; i < recommendations.size(); i++) {
+				msg.append(recommendations.get(i));
+				if(i < recommendations.size()-1) {
+					msg.append(",");
+				}
+			}
+
+			msg.append("]}");
+			PrintWriter out = response.getWriter();
+			out.println(msg.toString());
+		}
+
 		else if(param.equals("emailtargeted")) {
 			ArrayList<String> recommendations = getTargetedRecommendations("EmailRecommendationsTargeted", targetedTable);
 			StringBuilder msg = new StringBuilder("{ \"recommendations\": [");
@@ -77,6 +93,22 @@ public class recommendationsHandler extends HttpServlet {
 
 		else if(param.equals("browsersecuritytargeted")) {
 			ArrayList<String> recommendations = getTargetedRecommendations("BrowserSecurityRecommendationsTargeted", targetedTable);
+			StringBuilder msg = new StringBuilder("{ \"recommendations\": [");
+
+			for(int i = 0; i < recommendations.size(); i++) {
+				msg.append(recommendations.get(i));
+				if(i < recommendations.size()-1) {
+					msg.append(",");
+				}
+			}
+
+			msg.append("]}");
+			PrintWriter out = response.getWriter();
+			out.println(msg.toString());
+		}
+
+		else if(param.equals("smstargeted")) {
+			ArrayList<String> recommendations = getTargetedRecommendations("SMSTargetedRecommendations", targetedTable);
 			StringBuilder msg = new StringBuilder("{ \"recommendations\": [");
 
 			for(int i = 0; i < recommendations.size(); i++) {

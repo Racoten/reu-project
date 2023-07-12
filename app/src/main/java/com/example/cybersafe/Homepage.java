@@ -23,4 +23,9 @@ public class Homepage extends AppCompatActivity {
         Intent browserquestions = new Intent(this, BrowserSecurityQuestionnaire.class);
         startActivity(browserquestions);
     }
+
+    public void openSMSQuestionnaire(View view) {
+        Intent sms_questions = new Intent(this, SMSQuestionnaire.class);
+        startActivity(sms_questions);
+    }
 }
