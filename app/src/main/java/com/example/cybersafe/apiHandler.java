@@ -32,7 +32,8 @@ import okhttp3.Response;
 
 public class apiHandler {
     //public String URL = "10.0.2.2:8443";
-    public static String URL_STR = "192.168.0.32:8443";
+    //public static String URL_STR = "192.168.0.32:8443";
+    public static String URL_STR = "192.168.7.59:8443";
     public static OkHttpClient getUnsafeOkHttpClient() {
         try {
             final TrustManager[] trustAllCerts = new TrustManager[]{
