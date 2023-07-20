@@ -261,7 +261,70 @@ CREATE TABLE `ST2QuestionRecommendation` (
     FOREIGN KEY(`QuestionID`) REFERENCES `SMSTargetedQuestions2`(`QuestionID`),
     FOREIGN KEY(`RecommendationID`) REFERENCES `SMSTargetedRecommendations2`(`RecommendationID`)
 );
+----------------------------------------------------------------------------------------------------
 
+CREATE TABLE `WiFiQuestions` (
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
+);
+
+CREATE TABLE `WiFiTargetedQuestions1` (
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
+);
+
+CREATE TABLE `WiFiTargetedQuestions2` (
+    `QuestionID` INT AUTO_INCREMENT,
+    `QuestionText` TEXT NOT NULL,
+    `Weight` INT NOT NULL,
+    PRIMARY KEY(`QuestionID`)
+);
+
+CREATE TABLE `WiFiRecommendations` (
+    `RecommendationID` INT AUTO_INCREMENT,
+    `RecommendationText` TEXT NOT NULL,
+    PRIMARY KEY(`RecommendationID`)
+);
+
+CREATE TABLE `WiFiTargetedRecommendations1` (
+    `RecommendationID` INT AUTO_INCREMENT,
+    `RecommendationText` TEXT NOT NULL,
+    PRIMARY KEY(`RecommendationID`)
+);
+
+CREATE TABLE `WiFiTargetedRecommendations2` (
+    `RecommendationID` INT AUTO_INCREMENT,
+    `RecommendationText` TEXT NOT NULL,
+    PRIMARY KEY(`RecommendationID`)
+);
+
+CREATE TABLE `WFGQuestionRecommendation` (
+    `QuestionID` INT,
+    `RecommendationID` INT,
+    PRIMARY KEY(`QuestionID`, `RecommendationID`),
+    FOREIGN KEY(`QuestionID`) REFERENCES `WiFiQuestions`(`QuestionID`),
+    FOREIGN KEY(`RecommendationID`) REFERENCES `WiFiRecommendations`(`RecommendationID`)
+);
+
+CREATE TABLE `WT1QuestionRecommendation` (
+    `QuestionID` INT,
+    `RecommendationID` INT,
+    PRIMARY KEY(`QuestionID`, `RecommendationID`),
+    FOREIGN KEY(`QuestionID`) REFERENCES `WiFiTargetedQuestions1`(`QuestionID`),
+    FOREIGN KEY(`RecommendationID`) REFERENCES `WiFiTargetedRecommendations1`(`RecommendationID`)
+);
+
+CREATE TABLE `WT2QuestionRecommendation` (
+    `QuestionID` INT,
+    `RecommendationID` INT,
+    PRIMARY KEY(`QuestionID`, `RecommendationID`),
+    FOREIGN KEY(`QuestionID`) REFERENCES `WiFiTargetedQuestions2`(`QuestionID`),
+    FOREIGN KEY(`RecommendationID`) REFERENCES `WiFiTargetedRecommendations2`(`RecommendationID`)
+);
 -----------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -494,6 +557,8 @@ SET @last_email_question4_id = LAST_INSERT_ID();
 INSERT INTO `EmailRecommendationsTargeted3` (`RecommendationText`) 
 VALUES ('Ambigious/vague filenames can cause users to take risks, prompting them to open them when they may be malicious.');
 SET @last_email_recommendation4_id = LAST_INSERT_ID();
+
+--------------------------------------------------------------------------------------------------------------------------
 
 INSERT INTO `BrowserSecurityQuestionsTargeted1` (`QuestionText`, `Weight`) 
 VALUES ('Is the network password protected?', 7);
@@ -744,6 +809,107 @@ SET @last_sms_recommendation9_id = LAST_INSERT_ID();
 
 INSERT INTO `ST2QuestionRecommendation` (`QuestionID`, `RecommendationID`)
 VALUES (@last_sms_targeted_question8_id, @last_sms_recommendation9_id);
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+INSERT INTO `WiFiQuestions` (`QuestionText`, `Weight`) 
+VALUES ('Are you connecting to a new Wi-Fi network?', 7);
+SET @last_wifi_question_id = LAST_INSERT_ID();
+
+INSERT INTO `WiFiTargetedQuestions1` (`QuestionText`, `Weight`) 
+VALUES ('Do you know who owns or operates the network?', 9);
+SET @last_wifi_targeted_question1_id = LAST_INSERT_ID();
+
+INSERT INTO `WiFiTargetedQuestions1` (`QuestionText`, `Weight`) 
+VALUES ('Is it password-protected?', 8);
+SET @last_wifi_targeted_question2_id = LAST_INSERT_ID();
+
+INSERT INTO `WiFiTargetedQuestions1` (`QuestionText`, `Weight`) 
+VALUES ('Does it have a common name (like "Free Public Wi-Fi") that may indicate it is an open network potentially used by malicious actors?', 8);
+SET @last_wifi_targeted_question3_id = LAST_INSERT_ID();
+
+INSERT INTO `WiFiTargetedQuestions1` (`QuestionText`, `Weight`) 
+VALUES ('Have you checked if the network is encrypted with WPA2 or WPA3 security?', 7);
+SET @last_wifi_targeted_question4_id = LAST_INSERT_ID();
+
+INSERT INTO `WiFiRecommendations` (`RecommendationText`)
+VALUES ('Only connect to Wi-Fi networks that are managed by trusted entities. Unknown networks can be operated by malicious actors who might try to steal your information.');
+SET @last_wifi_recommendation1_id = LAST_INSERT_ID();
+
+INSERT INTO `WFGQuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_wifi_question_id, @last_wifi_recommendation1_id);
+
+INSERT INTO `WiFiTargetedRecommendations1` (`RecommendationText`)
+VALUES ('Always connect to password-protected networks when possible. Open networks are not secure and can be easily accessed by malicious users.');
+SET @last_wifi_recommendation2_id = LAST_INSERT_ID();
+
+INSERT INTO `WT1QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_wifi_targeted_question1_id, @last_wifi_recommendation2_id);
+
+INSERT INTO `WiFiTargetedRecommendations1` (`RecommendationText`)
+VALUES ('Be skeptical of networks with generic names. They could be traps set up by attackers to trick people into connecting.');
+SET @last_wifi_recommendation3_id = LAST_INSERT_ID();
+
+INSERT INTO `WT1QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_wifi_targeted_question2_id, @last_wifi_recommendation3_id);
+
+INSERT INTO `WiFiTargetedRecommendations1` (`RecommendationText`)
+VALUES ('Make sure the Wi-Fi network uses WPA2 or WPA3 security. These encryption methods are more secure and harder for hackers to break into.');
+SET @last_wifi_recommendation4_id = LAST_INSERT_ID();
+
+INSERT INTO `WT1QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_wifi_targeted_question3_id, @last_wifi_recommendation4_id);
+
+INSERT INTO `WiFiTargetedRecommendations1` (`RecommendationText`)
+VALUES ('Always be cautious about the networks you connect to. If you suspect a network might not be secure, don''t connect to it, especially if you plan on accessing or transmitting sensitive data.');
+SET @last_wifi_recommendation5_id = LAST_INSERT_ID();
+
+INSERT INTO `WT1QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_wifi_targeted_question4_id, @last_wifi_recommendation5_id);
+
+INSERT INTO `WiFiQuestions` (`QuestionText`, `Weight`) 
+VALUES ('Are you doing anything that requires access to sensitive information (banking, healthcare, government services, etc.)?', 8);
+SET @last_wifi_question2_id = LAST_INSERT_ID();
+
+INSERT INTO `WiFiRecommendations` (`RecommendationText`)
+VALUES ('Always use secure, encrypted connections (HTTPS) when accessing sensitive data to prevent data interception.');
+SET @last_wifi_recommendation6_id = LAST_INSERT_ID();
+
+INSERT INTO `WFGQuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_wifi_question2_id, @last_wifi_recommendation6_id);
+
+INSERT INTO `WiFiTargetedQuestions2` (`QuestionText`, `Weight`) 
+VALUES ('Are you using a secure, encrypted connection (like HTTPS) for these activities?', 8);
+SET @last_wifi_targeted_question6_id = LAST_INSERT_ID();
+
+INSERT INTO `WiFiTargetedRecommendations2` (`RecommendationText`)
+VALUES ('If available, use a VPN when accessing sensitive data on public Wi-Fi to encrypt your data and hide your online activity.');
+SET @last_wifi_recommendation7_id = LAST_INSERT_ID();
+
+INSERT INTO `WT2QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_wifi_targeted_question6_id, @last_wifi_recommendation7_id);
+
+INSERT INTO `WiFiTargetedQuestions2` (`QuestionText`, `Weight`) 
+VALUES ('Are you utilizing a Virtual Private Network (VPN) to secure your connection?', 8);
+SET @last_wifi_targeted_question7_id = LAST_INSERT_ID();
+
+INSERT INTO `WiFiTargetedRecommendations2` (`RecommendationText`)
+VALUES ('Always log out of sensitive accounts after use to prevent unauthorized access.');
+SET @last_wifi_recommendation8_id = LAST_INSERT_ID();
+
+INSERT INTO `WT2QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_wifi_targeted_question6_id, @last_wifi_recommendation8_id);
+
+INSERT INTO `WiFiTargetedQuestions2` (`QuestionText`, `Weight`) 
+VALUES ('Are you ensuring to log out of all sensitive accounts after use?', 7);
+SET @last_wifi_targeted_question8_id = LAST_INSERT_ID();
+
+INSERT INTO `WiFiTargetedRecommendations2` (`RecommendationText`)
+VALUES ('Never enter sensitive information such as passwords or credit card details on untrusted networks or websites.');
+SET @last_wifi_recommendation9_id = LAST_INSERT_ID();
+
+INSERT INTO `WT2QuestionRecommendation` (`QuestionID`, `RecommendationID`)
+VALUES (@last_wifi_targeted_question7_id, @last_wifi_recommendation9_id);
 
 
 COMMIT
