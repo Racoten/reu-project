@@ -81,6 +81,23 @@ public class questionsHandler extends HttpServlet {
             out.println(root_obj.toString());
         }
 
+        else if(param.equals("wifigeneral")) {
+            ArrayList<Question> questions = getGeneralQuestions("WiFiQuestions");
+            JSONObject root_obj = new JSONObject();
+            JSONArray resp_array = new JSONArray();
+            for(int i = 0; i < questions.size(); i++) {
+                JSONObject obj = new JSONObject();
+                obj.put("question_text", questions.get(i).getQuestion_text());
+                obj.put("id", questions.get(i).getId());
+                obj.put("weight", questions.get(i).getWeight());
+                resp_array.put(obj);
+            }
+            root_obj.put("questions", resp_array);
+
+            PrintWriter out = response.getWriter();
+            out.println(root_obj.toString());
+        }
+
         else if(param.equals("browsertargeted")) {
             ArrayList<Question> questions = getTargetedQuestions("BrowserSecurityQuestionsTargeted", targetedTable);
             JSONObject root_obj = new JSONObject();
@@ -117,6 +134,23 @@ public class questionsHandler extends HttpServlet {
 
         else if(param.equals("smstargeted")) {
             ArrayList<Question> questions = getTargetedQuestions("SMSTargetedQuestions", targetedTable);
+            JSONObject root_obj = new JSONObject();
+            JSONArray resp_array = new JSONArray();
+            for(int i = 0; i < questions.size(); i++) {
+                JSONObject obj = new JSONObject();
+                obj.put("question_text", questions.get(i).getQuestion_text());
+                obj.put("id", questions.get(i).getId());
+                obj.put("weight", questions.get(i).getWeight());
+                resp_array.put(obj);
+            }
+            root_obj.put("questions", resp_array);
+
+            PrintWriter out = response.getWriter();
+            out.println(root_obj.toString());
+        }
+
+        else if(param.equals("wifitargeted")) {
+            ArrayList<Question> questions = getTargetedQuestions("WiFiTargetedQuestions", targetedTable);
             JSONObject root_obj = new JSONObject();
             JSONArray resp_array = new JSONArray();
             for(int i = 0; i < questions.size(); i++) {
