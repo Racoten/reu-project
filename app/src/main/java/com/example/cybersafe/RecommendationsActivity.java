@@ -5,11 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -45,7 +42,8 @@ public class RecommendationsActivity extends AppCompatActivity {
     private double question_counter = 0;
     private Double weight_average = 0.0;
     private RecommendationAdapter rec_adapter;
-
+    String ip_address = "";
+    apiHandler api = new apiHandler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +52,10 @@ public class RecommendationsActivity extends AppCompatActivity {
         general = i.getParcelableArrayListExtra("general");
         targeted1 = i.getParcelableArrayListExtra("targeted1");
         String type = i.getStringExtra("question_type");
-
+        ip_address = i.getStringExtra("ip");
+        if(ip_address.isEmpty()) {
+            ip_address = api.getIP();
+        }
 
         //weight_total = i.getIntExtra("weight_total", 0);
         //question_counter = i.getIntExtra("question_counter", 0);
@@ -130,10 +131,11 @@ public class RecommendationsActivity extends AppCompatActivity {
     }
 
     public void getGeneralEmailRecommendations() {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
         //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
-        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=emailgeneral";
+        String url = "https://"+ip_address+":8443/recommendationsHandler?param=emailgeneral";
 
         //CountDownLatch latch = new CountDownLatch(1);
         CountDownLatch latch = new CountDownLatch(1);
@@ -194,9 +196,10 @@ public class RecommendationsActivity extends AppCompatActivity {
     }
 
     public void getTargetedEmailRecommendations(String tablename, ArrayList<Recommendation> tempreclist, ArrayList<Question> comparelist) {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=" + tablename;
-        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=emailtargeted&targetedtable=" + tablename;
+        String url = "https://"+ip_address+":8443/recommendationsHandler?param=emailtargeted&targetedtable=" + tablename;
         Integer tblint = new Integer(tablename);
 
         //CountDownLatch latch = new CountDownLatch(1);
@@ -266,10 +269,11 @@ public class RecommendationsActivity extends AppCompatActivity {
     }
 
     public void getGeneralBrowserRecommendations() {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
         //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
-        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=browsersecuritygeneral";
+        String url = "https://"+ip_address+":8443/recommendationsHandler?param=browsersecuritygeneral";
 
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -330,11 +334,12 @@ public class RecommendationsActivity extends AppCompatActivity {
     }
 
     public void getTargetedBrowserRecommendations(String tablename, ArrayList<Recommendation> tempreclist, ArrayList<Question> comparelist) {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
         //String url1 = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
         //String url2 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=2";
-        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=browsersecuritytargeted&targetedtable=" + tablename;
+        String url = "https://"+ip_address+":8443/recommendationsHandler?param=browsersecuritytargeted&targetedtable=" + tablename;
         Integer tblint = new Integer(tablename);
 
         CountDownLatch latch = new CountDownLatch(1);
@@ -394,10 +399,11 @@ public class RecommendationsActivity extends AppCompatActivity {
     }
 
     public void getGeneralSMSRecommendations() {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
         //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
-        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=smsgeneral";
+        String url = "https://"+ip_address+":8443/recommendationsHandler?param=smsgeneral";
 
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -458,11 +464,12 @@ public class RecommendationsActivity extends AppCompatActivity {
     }
 
     public void getTargetedSMSRecommendations(String tablename, ArrayList<Recommendation> tempreclist, ArrayList<Question> comparelist) {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
         //String url1 = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
         //String url2 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=2";
-        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=smstargeted&targetedtable=" + tablename;
+        String url = "https://"+ip_address+":8443/recommendationsHandler?param=smstargeted&targetedtable=" + tablename;
         Integer tblint = new Integer(tablename);
 
         CountDownLatch latch = new CountDownLatch(1);
@@ -522,10 +529,11 @@ public class RecommendationsActivity extends AppCompatActivity {
     }
 
     public void getGeneralWifiRecommendations() {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
         //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
-        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=wifigeneral";
+        String url = "https://"+ip_address+":8443/recommendationsHandler?param=wifigeneral";
 
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -584,11 +592,12 @@ public class RecommendationsActivity extends AppCompatActivity {
     }
 
     public void getTargetedWifiRecommendations(String tablename, ArrayList<Recommendation> tempreclist, ArrayList<Question> comparelist) {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
         //String url1 = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
         //String url2 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=2";
-        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=wifitargeted&targetedtable=" + tablename;
+        String url = "https://"+ip_address+":8443/recommendationsHandler?param=wifitargeted&targetedtable=" + tablename;
         Integer tblint = new Integer(tablename);
 
         CountDownLatch latch = new CountDownLatch(1);

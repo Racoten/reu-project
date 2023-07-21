@@ -39,11 +39,20 @@ public class WIFIQuestionnaire extends AppCompatActivity {
     private Button next;
     private Button submit;
 
+    String ip_address = "";
+    apiHandler api = new apiHandler();
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifiquestionnaire);
+
+        Intent nt = getIntent();
+        ip_address = nt.getStringExtra("ip");
+        if(ip_address.isEmpty()) {
+            ip_address = api.getIP();
+        }
 
         box = findViewById(R.id.wifi_box);
         target_box = findViewById(R.id.target_box);
@@ -103,15 +112,15 @@ public class WIFIQuestionnaire extends AppCompatActivity {
         rec.putExtra("question_type", "wifi");
         //rec.putExtra("weight_total", weight_total);
         //rec.putExtra("question_counter", question_counter);
-
+        rec.putExtra("ip", ip_address);
         startActivity(rec);
     }
 
     public void getWifiQuestions() {
-
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
-        String url = "https://"+apiHandler.URL_STR+"/questionsHandler?param=wifigeneral";
+        String url = "https://"+ip_address+":8443/questionsHandler?param=wifigeneral";
         CountDownLatch latch = new CountDownLatch(1);
 
         Request req = new Request.Builder()
@@ -160,9 +169,10 @@ public class WIFIQuestionnaire extends AppCompatActivity {
     }
 
     public void getTargetedQuestions(String targetedtable) {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
-        String url1 = "https://"+apiHandler.URL_STR+"/questionsHandler?param=wifitargeted&targetedtable=" + targetedtable;
+        String url1 = "https://"+ip_address+":8443/questionsHandler?param=wifitargeted&targetedtable=" + targetedtable;
 
 
         CountDownLatch latch = new CountDownLatch(1);

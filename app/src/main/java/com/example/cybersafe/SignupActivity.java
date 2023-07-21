@@ -1,24 +1,15 @@
 package com.example.cybersafe;
 
-import static org.apache.http.conn.ssl.SSLSocketFactory.SSL;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -30,10 +21,17 @@ import okhttp3.Response;
 
 public class SignupActivity extends AppCompatActivity {
 
+    String ip_address = "";
+    apiHandler api = new apiHandler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        Intent nt = getIntent();
+        ip_address = nt.getStringExtra("ip");
+        if(ip_address.isEmpty()) {
+            ip_address = api.getIP();
+        }
     }
 
     public void doSignup(View view) {
@@ -43,7 +41,7 @@ public class SignupActivity extends AppCompatActivity {
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/appAuth";
-        String url = "https://"+apiHandler.URL_STR+"/appAuth";
+        String url = "https://"+ip_address+":8443/appAuth";
 
         //String params = "param=login&username=test&password=test";
         String user = username.getText().toString();

@@ -36,6 +36,8 @@ public class EmailQuestionnaire extends AppCompatActivity {
     private QuestionAdapter targ_adapter;
     private Button next;
     private Button submit;
+    String ip_address = "";
+    apiHandler api = new apiHandler();
 
 
 
@@ -44,7 +46,11 @@ public class EmailQuestionnaire extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_questionnaire);
-
+        Intent nt = getIntent();
+        ip_address = nt.getStringExtra("ip");
+        if(ip_address.isEmpty()) {
+            ip_address = api.getIP();
+        }
 
         box = findViewById(R.id.email_box);
         target_box = findViewById(R.id.target_box);
@@ -107,15 +113,15 @@ public class EmailQuestionnaire extends AppCompatActivity {
         rec.putExtra("question_type", "email");
         //rec.putExtra("weight_total", weight_total);
         //rec.putExtra("question_counter", question_counter);
-
+        rec.putExtra("ip", ip_address);
         startActivity(rec);
     }
 
     public void getEmailQuestions() {
-
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
-        String url = "https://"+apiHandler.URL_STR+"/questionsHandler?param=emailgeneral";
+        String url = "https://"+ip_address+":8443/questionsHandler?param=emailgeneral";
         CountDownLatch latch = new CountDownLatch(1);
 
         Request req = new Request.Builder()
@@ -164,9 +170,10 @@ public class EmailQuestionnaire extends AppCompatActivity {
     }
 
     public void getTargetedQuestions(String targetedtable) {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
-        String url1 = "https://"+apiHandler.URL_STR+"/questionsHandler?param=emailtargeted&targetedtable=" + targetedtable;
+        String url1 = "https://"+ip_address+":8443/questionsHandler?param=emailtargeted&targetedtable=" + targetedtable;
 
 
         CountDownLatch latch = new CountDownLatch(1);

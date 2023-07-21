@@ -11,24 +11,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class BrowserSecurityQuestionnaire extends AppCompatActivity {
@@ -46,10 +42,21 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
     private Button next;
     private Button submit;
 
+    String ip_address = "";
+    apiHandler api = new apiHandler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser_security_questionnaire);
+
+        Intent nt = getIntent();
+        ip_address = nt.getStringExtra("ip");
+        if(ip_address.isEmpty()) {
+            ip_address = api.getIP();
+        }
+
+
         question_box = findViewById(R.id.browser_question_general);
         target1_box = findViewById(R.id.browser_target_1);
 
@@ -77,7 +84,7 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
         rec.putExtra("question_type", "browser");
         //rec.putExtra("weight_total", weight_total);
         //rec.putExtra("question_counter", question_counter);
-
+        rec.putExtra("ip", ip_address);
         startActivity(rec);
     }
 
@@ -104,10 +111,10 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
     }
 
     public void getBrowserGeneralQuestions() {
-
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=browsersecuritygeneral";
-        String url = "https://"+apiHandler.URL_STR+"/questionsHandler?param=browsersecuritygeneral";
+        String url = "https://"+ip_address+":8443/questionsHandler?param=browsersecuritygeneral";
 
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -168,9 +175,10 @@ public class BrowserSecurityQuestionnaire extends AppCompatActivity {
     }
 
     public void getTargetedQuestions(String targetedtable) {
+        apiHandler api = new apiHandler();
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
-        String url1 = "https://"+apiHandler.URL_STR+"/questionsHandler?param=browsertargeted&targetedtable=" + targetedtable;
+        String url1 = "https://"+ip_address+":8443/questionsHandler?param=browsertargeted&targetedtable=" + targetedtable;
 
         CountDownLatch latch = new CountDownLatch(1);
 

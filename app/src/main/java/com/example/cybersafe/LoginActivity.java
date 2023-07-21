@@ -1,29 +1,17 @@
 package com.example.cybersafe;
 
-import static org.apache.http.conn.ssl.SSLSocketFactory.SSL;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,11 +23,19 @@ import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
+    String ip_address = "";
+    apiHandler api = new apiHandler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Intent nt = getIntent();
+
+        ip_address = nt.getStringExtra("ip");
+        if(ip_address.isEmpty()) {
+           ip_address = api.getIP();
+        }
     }
 
     public void doLogin(View view) throws NoSuchAlgorithmException, KeyManagementException {
@@ -47,10 +43,9 @@ public class LoginActivity extends AppCompatActivity {
         EditText username = (EditText) findViewById(R.id.username_input);
         EditText password = (EditText) findViewById(R.id.password_input);
 
-
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/appAuth";
-        String url = "https://"+apiHandler.URL_STR+"/appAuth";
+        String url = "https://"+ip_address+":8443/appAuth";
 
         //String params = "param=login&username=test&password=test";
 
@@ -83,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(!resp_string.startsWith("not")) {
                     // start questionnaire home
                     Intent homeIntent = new Intent(LoginActivity.this, Homepage.class);
+                    homeIntent.putExtra("ip", ip_address);
                     startActivity(homeIntent);
                 } else {
                     runOnUiThread(() -> Toast.makeText(view.getContext(), "Failed to log in", Toast.LENGTH_LONG).show());
