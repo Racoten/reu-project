@@ -28,4 +28,12 @@ public class Homepage extends AppCompatActivity {
         Intent sms_questions = new Intent(this, SMSQuestionnaire.class);
         startActivity(sms_questions);
     }
+
+
+    public void openWIFIQuestionnaire(View view) {
+        Intent wifi_questions = new Intent(this, WIFIQuestionnaire.class);
+        startActivity(wifi_questions);
+    }
+
+
 }

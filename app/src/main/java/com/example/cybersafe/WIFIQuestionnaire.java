@@ -25,7 +25,9 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-public class EmailQuestionnaire extends AppCompatActivity {
+
+public class WIFIQuestionnaire extends AppCompatActivity {
+
     ArrayList<Question> general_questions = new ArrayList<>();
     ArrayList<Question> targeted_questions = new ArrayList<>();
     private RecyclerView box;
@@ -37,16 +39,13 @@ public class EmailQuestionnaire extends AppCompatActivity {
     private Button next;
     private Button submit;
 
-
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_email_questionnaire);
+        setContentView(R.layout.activity_wifiquestionnaire);
 
-
-        box = findViewById(R.id.email_box);
+        box = findViewById(R.id.wifi_box);
         target_box = findViewById(R.id.target_box);
 
         next = findViewById(R.id.next_question);
@@ -61,10 +60,7 @@ public class EmailQuestionnaire extends AppCompatActivity {
         box.setAdapter(adapter);
         box.setVisibility(View.VISIBLE);
         target_box.setAdapter(targ_adapter);
-        getEmailQuestions();
-
-        // notifyDataSetChanged has to run inside of ui thread runnable, inside getEmailQuestions()
-        //adapter.notifyDataSetChanged();
+        getWifiQuestions();
     }
 
     public boolean questionExists(String text, ArrayList<Question> list) {
@@ -104,18 +100,18 @@ public class EmailQuestionnaire extends AppCompatActivity {
         Intent rec = new Intent(this, RecommendationsActivity.class);
         rec.putParcelableArrayListExtra("targeted1", targeted_questions);
         rec.putParcelableArrayListExtra("general", general_questions);
-        rec.putExtra("question_type", "email");
+        rec.putExtra("question_type", "wifi");
         //rec.putExtra("weight_total", weight_total);
         //rec.putExtra("question_counter", question_counter);
 
         startActivity(rec);
     }
 
-    public void getEmailQuestions() {
+    public void getWifiQuestions() {
 
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
-        String url = "https://"+apiHandler.URL_STR+"/questionsHandler?param=emailgeneral";
+        String url = "https://"+apiHandler.URL_STR+"/questionsHandler?param=wifigeneral";
         CountDownLatch latch = new CountDownLatch(1);
 
         Request req = new Request.Builder()
@@ -166,44 +162,44 @@ public class EmailQuestionnaire extends AppCompatActivity {
     public void getTargetedQuestions(String targetedtable) {
         OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
         //String url1 = "https://10.0.2.2:8443/questionsHandler?param=emailtargeted&targetedtable=1";
-        String url1 = "https://"+apiHandler.URL_STR+"/questionsHandler?param=emailtargeted&targetedtable=" + targetedtable;
+        String url1 = "https://"+apiHandler.URL_STR+"/questionsHandler?param=wifitargeted&targetedtable=" + targetedtable;
 
 
         CountDownLatch latch = new CountDownLatch(1);
 
         Request req = new Request.Builder()
-                 .url(url1)
-                 .get()
-                 .build();
-         client.newCall(req).enqueue(new Callback() {
-             @Override
-             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                 e.printStackTrace();
-                 latch.countDown();
+                .url(url1)
+                .get()
+                .build();
+        client.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                latch.countDown();
 
             }
 
-           @Override
+            @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 //System.out.println(response.body().string());
 
                 try {
-                   JSONObject obj = new JSONObject(response.body().string());
+                    JSONObject obj = new JSONObject(response.body().string());
                     JSONArray t = obj.getJSONArray("questions");
-                   for (int i = 0; i < t.length(); i++) {
-                       //targeted1[i] = new Question(t1.getString(i), "");
+                    for (int i = 0; i < t.length(); i++) {
+                        //targeted1[i] = new Question(t1.getString(i), "");
                         JSONObject q = t.getJSONObject(i);
-                       if(!questionExists(q.getString("question_text"),  targeted_questions)) {
-                           targeted_questions.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
-                       }
+                        if(!questionExists(q.getString("question_text"),  targeted_questions)) {
+                            targeted_questions.add(new Question(q.getString("question_text"), "no", q.getInt("weight"), q.getInt("id"), Integer.valueOf(targetedtable)));
+                        }
                     }
-                   latch.countDown();
+                    latch.countDown();
 
 
-               } catch (JSONException e) {
+                } catch (JSONException e) {
                     throw new RuntimeException(e);
-              }
-          }
+                }
+            }
         });
         try {
             latch.await();
