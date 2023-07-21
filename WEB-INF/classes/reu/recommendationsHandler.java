@@ -76,7 +76,7 @@ public class recommendationsHandler extends HttpServlet {
 		}
 
 		else if(param.equals("wifigeneral")) {
-			ArrayList<String> recommendations = getGeneralRecommendations("wifirecommendations");
+			ArrayList<String> recommendations = getGeneralRecommendations("WiFiRecommendations");
 			StringBuilder msg = new StringBuilder("{ \"recommendations\": [");
 
 			for(int i = 0; i < recommendations.size(); i++) {

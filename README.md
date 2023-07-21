@@ -13,6 +13,7 @@
 ## Connection settings (linux)
 - database url: `jdbc:mysql://localhost:3306/cybersafe?serverTimezone=UTC`  
 - make sure table names are capitalized
+- make sure ip address in apiHandler class corresponds to one on `enx**` interface
 
 ## JSON library
 - https://search.maven.org/remotecontent?filepath=org/json/json/20230618/json-20230618.jar

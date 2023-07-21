@@ -100,6 +100,15 @@ public class RecommendationsActivity extends AppCompatActivity {
 
                 }
             }
+        } else if(Objects.equals(type, "wifi")) {
+            getGeneralWifiRecommendations();
+
+            for(int k = 0; k < general.size(); k++) {
+                question_counter += 1;
+                if(!Objects.equals(general.get(k).getAnswer(), "no")) {
+                    getTargetedWifiRecommendations(String.valueOf(k+1), temp1, targeted1);
+                }
+            }
         }
         //setWeightAverage();
         //score.setText(String.valueOf(weight_average));
@@ -454,6 +463,132 @@ public class RecommendationsActivity extends AppCompatActivity {
         //String url1 = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
         //String url2 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=2";
         String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=smstargeted&targetedtable=" + tablename;
+        Integer tblint = new Integer(tablename);
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        Request req = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        client.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                System.out.println("Error fetching email general recommendations");
+                //latch.countDown();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                //JSONObject obj = null;
+                try {
+                    JSONObject obj = new JSONObject(response.body().string());
+                    JSONArray t1_rec = obj.getJSONArray("recommendations");
+                    //System.out.println(t1_rec);
+                    ArrayList<Question> tableq = getQuestionTable(comparelist, Integer.valueOf(tablename));
+
+                    for (int i = 0; i < t1_rec.length(); i++) {
+                        JSONObject ro = t1_rec.getJSONObject(i);
+
+                        if(!Objects.equals(tableq.get(i).getAnswer(), "no") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
+                            weight_total += tableq.get(i).getWeight();
+                            //question_counter += 1;
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            setWeightAverage();
+
+                        }
+                        question_counter += 1;
+                    }
+
+                    latch.countDown();
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                //System.out.println(obj);
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        score.setText(String.format("%.1f", weight_average));
+        rec_adapter.notifyDataSetChanged();
+
+
+    }
+
+    public void getGeneralWifiRecommendations() {
+        OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
+        //String url = "https://10.0.2.2:8443/questionsHandler?param=emailgeneral";
+        //String url = "https://192.168.0.32:8443/recommendationsHandler?param=emailgeneral";
+        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=wifigeneral";
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        Request req = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        client.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                System.out.println("Error fetching email general recommendations");
+                //latch.countDown();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                //JSONObject obj = null;
+                try {
+                    JSONObject obj = new JSONObject(response.body().string());
+                    JSONArray gen_rec = obj.getJSONArray("recommendations");
+                    //System.out.println(gen_rec.toString());
+                    for(int i = 0; i < gen_rec.length(); i++) {
+
+                        if(!Objects.equals(general.get(i).getAnswer(), "no")) {
+                            JSONObject ro  = gen_rec.getJSONObject(i);
+
+                            question_counter += 1;
+                            weight_total += general.get(i).getWeight();
+                            //System.out.println(gen_rec.getString(i));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            setWeightAverage();
+                        }
+
+                    }
+
+                    latch.countDown();
+                    //System.out.println("Weight: "+weight_average+" Count: "+question_counter);
+
+                    //System.out.println(gen_rec);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                //System.out.println(obj);
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        score.setText(String.format("%.1f", weight_average));
+        rec_adapter.notifyDataSetChanged();
+
+    }
+
+    public void getTargetedWifiRecommendations(String tablename, ArrayList<Recommendation> tempreclist, ArrayList<Question> comparelist) {
+        OkHttpClient client = apiHandler.getUnsafeOkHttpClient();
+        //String url1 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
+        //String url1 = "https://192.168.0.32:8443/recommendationsHandler?param=emailtargeted&targetedtable=1";
+        //String url2 = "https://10.0.2.2:8443/recommendationsHandler?param=emailtargeted&targetedtable=2";
+        String url = "https://"+apiHandler.URL_STR+"/recommendationsHandler?param=wifitargeted&targetedtable=" + tablename;
         Integer tblint = new Integer(tablename);
 
         CountDownLatch latch = new CountDownLatch(1);

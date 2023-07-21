@@ -45,7 +45,7 @@ public class SMSQuestionnaire extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smsquestionnaire);
 
-        box = findViewById(R.id.sms_q_box);
+        box = findViewById(R.id.sms_box);
         target_box = findViewById(R.id.target_box);
 
         next = findViewById(R.id.next_question);

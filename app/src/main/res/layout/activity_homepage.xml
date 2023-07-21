@@ -98,14 +98,43 @@
         android:layout_marginStart="44dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="47dp"
-        android:layout_marginBottom="109dp"
         android:onClick="openSMSQuestionnaire"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sms_label"
-        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/sms" />
+
+    <TextView
+        android:id="@+id/wifi_label"
+        android:layout_width="307dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="45dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="59dp"
+        android:text="WiFi Questionnaire"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sms_button" />
+
+    <ImageView
+        android:id="@+id/wifi_button"
+        android:layout_width="320dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="47dp"
+        android:layout_marginBottom="80dp"
+        android:onClick="openWIFIQuestionnaire"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wifi_label"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/wifi" />
 </androidx.constraintlayout.widget.ConstraintLayout>
