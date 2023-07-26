@@ -168,7 +168,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                             //question_counter += 1;
                             weight_total += general.get(i).getWeight();
                             //System.out.println(gen_rec.getString(i));
-                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText"), general.get(i).getQuestionText()));
                             setWeightAverage();
                         }
 
@@ -234,7 +234,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                         // fix if statement
                         if(!Objects.equals(tableq.get(i).getAnswer(), "no") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
                             weight_total += tableq.get(i).getWeight();
-                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText"), tableq.get(i).getQuestionText()));
 
                             setWeightAverage();
 
@@ -304,7 +304,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                             question_counter += 1;
                             weight_total += general.get(i).getWeight();
                             //System.out.println(gen_rec.getString(i));
-                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText"), general.get(i).getQuestionText()));
                             setWeightAverage();
                         }
 
@@ -371,7 +371,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                         if(!Objects.equals(tableq.get(i).getAnswer(), "no") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
                             weight_total += tableq.get(i).getWeight();
                             //question_counter += 1;
-                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText"), tableq.get(i).getQuestionText()));
                             setWeightAverage();
 
                         }
@@ -434,7 +434,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                             question_counter += 1;
                             weight_total += general.get(i).getWeight();
                             //System.out.println(gen_rec.getString(i));
-                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText"), general.get(i).getQuestionText()));
                             setWeightAverage();
                         }
 
@@ -501,7 +501,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                         if(!Objects.equals(tableq.get(i).getAnswer(), "no") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
                             weight_total += tableq.get(i).getWeight();
                             //question_counter += 1;
-                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText"), tableq.get(i).getQuestionText()));
                             setWeightAverage();
 
                         }
@@ -564,7 +564,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                             question_counter += 1;
                             weight_total += general.get(i).getWeight();
                             //System.out.println(gen_rec.getString(i));
-                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText"), general.get(i).getQuestionText()));
                             setWeightAverage();
                         }
 
@@ -629,7 +629,7 @@ public class RecommendationsActivity extends AppCompatActivity {
                         if(!Objects.equals(tableq.get(i).getAnswer(), "no") && tableq.get(i).getId().toString().equals(ro.getString("RecommendationID"))) {
                             weight_total += tableq.get(i).getWeight();
                             //question_counter += 1;
-                            rec_all.add(new Recommendation(ro.getString("RecommendationText")));
+                            rec_all.add(new Recommendation(ro.getString("RecommendationText"), tableq.get(i).getQuestionText()));
                             setWeightAverage();
 
                         }

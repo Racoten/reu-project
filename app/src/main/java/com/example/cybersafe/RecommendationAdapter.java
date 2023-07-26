@@ -43,15 +43,18 @@ public class RecommendationAdapter extends RecyclerView.Adapter<RecommendationAd
 
     public class RecommendationHolder extends RecyclerView.ViewHolder {
         private TextView rec_text;
+        private TextView q_header_text;
 
         public RecommendationHolder(@NonNull View itemView) {
             super(itemView);
             rec_text = itemView.findViewById(R.id.rec_text);
+            q_header_text = itemView.findViewById(R.id.q_header_text);
         }
 
 
         public void setDetails(Recommendation r) {
             rec_text.setText(r.getRecommendationText());
+            q_header_text.setText(r.getQuestionText());
         }
     }
 

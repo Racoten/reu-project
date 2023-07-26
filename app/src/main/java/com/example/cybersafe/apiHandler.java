@@ -14,9 +14,9 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.OkHttpClient;
 
 public class apiHandler {
-    //public static String url_str = "10.0.2.2:8443";
+    public String url_str = "10.0.2.2";
     //public static String url_str = "192.168.0.32:8443";
-    private String url_str = "192.168.85.48";
+    //private String url_str = "192.168.85.48";
     public static OkHttpClient getUnsafeOkHttpClient() {
         try {
             final TrustManager[] trustAllCerts = new TrustManager[]{
